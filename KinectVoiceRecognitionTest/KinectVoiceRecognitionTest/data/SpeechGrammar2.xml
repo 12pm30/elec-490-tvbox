@@ -4,8 +4,6 @@
       <item>
         <tag>SCREEN_OFF</tag>
         <one-of>
-          <item> stop </item>
-          <item> fuck </item>
           <item> turn off </item>
           <item> screen off </item>
         </one-of>
@@ -18,6 +16,40 @@
           <item> play photos </item>
         </one-of>
       </item>
+
+      <item>
+        <tag>DIRECTION_UP</tag>
+        <one-of>
+          <item> up </item>
+          <item> go up </item>
+          <item> scroll up </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>DIRECTION_DOWN</tag>
+        <one-of>
+          <item> up </item>
+          <item> go down </item>
+          <item> scroll down </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>DIRECTION_PREVIOUS</tag>
+        <one-of>
+          <item> previous </item>
+          <item> back </item>
+          <item> go back </item>
+          <item> scroll back </item>
+        </one-of>
+      </item>
+
+      <item>
+         <tag>MEDIA_PLAY</tag>
+         <one-of>
+            <item> play </item>
+         </one-of>
+      </item>
+
     </one-of>
   </rule>
 </grammar>
