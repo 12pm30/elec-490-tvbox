@@ -9,12 +9,12 @@ using Microsoft.Speech.Recognition;
 using Microsoft.Speech.Synthesis;
 using System.IO;
 
-namespace KinectVoiceRecognitionTest
+namespace VRKC
 {
     class Program
     {
         private static SpeechRecognitionEngine sre;
-     
+
 
         private static KinectSensor sensor;
 
@@ -28,7 +28,7 @@ namespace KinectVoiceRecognitionTest
 
             Console.Clear();
             Console.WriteLine("Waiting for sensor");
-   
+
             while (chooser.Status != ChooserStatus.SensorStarted)
             {
 

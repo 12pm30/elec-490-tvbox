@@ -81,6 +81,7 @@
     </Content>
     <Content Include="data\SpeechGrammar2.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>

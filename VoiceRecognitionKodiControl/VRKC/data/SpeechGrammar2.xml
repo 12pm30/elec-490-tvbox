@@ -1,0 +1,23 @@
+﻿<grammar version="1.0" xml:lang="en-US" root="rootRule" tag-format="semantics/1.0-literals" xmlns="http://www.w3.org/2001/06/grammar">
+  <rule id="rootRule">
+    <one-of>
+      <item>
+        <tag>SCREEN_OFF</tag>
+        <one-of>
+          <item> stop </item>
+          <item> fuck </item>
+          <item> turn off </item>
+          <item> screen off </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>SELECT_PHOTOS</tag>
+        <one-of>
+          <item> photos </item>
+          <item> show photos </item>
+          <item> play photos </item>
+        </one-of>
+      </item>
+    </one-of>
+  </rule>
+</grammar>
