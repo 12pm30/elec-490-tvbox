@@ -4,20 +4,139 @@
       <item>
         <tag>SCREEN_OFF</tag>
         <one-of>
-          <item> stop </item>
-          <item> fuck </item>
           <item> turn off </item>
           <item> screen off </item>
         </one-of>
       </item>
+
       <item>
-        <tag>SELECT_PHOTOS</tag>
+        <tag>SCREEN_HOME</tag>
+        <one-of>
+          <item> home </item>
+          <item> home screen</item>
+          <item> show home </item>
+        </one-of>
+      </item>
+
+      <item>
+        <tag>SCREEN_PHOTOS</tag>
         <one-of>
           <item> photos </item>
           <item> show photos </item>
           <item> play photos </item>
         </one-of>
       </item>
+
+      <item>
+        <tag>SCREEN_VIDEOS</tag>
+        <one-of>
+          <item> videos </item>
+          <item> show videos </item>
+          <item> play videos </item>
+        </one-of>
+      </item>
+
+      <item>
+        <tag>SCREEN_MUSIC</tag>
+        <one-of>
+          <item> music </item>
+          <item> show music </item>
+          <item> listen to music </item>
+          <item> listen music </item>
+          <item> play music </item>
+        </one-of>
+      </item>
+
+      <item>
+        <tag>DIRECTION_UP</tag>
+        <one-of>
+          <item> up </item>
+          <item> go up </item>
+          <item> scroll up </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>DIRECTION_DOWN</tag>
+        <one-of>
+          <item> up </item>
+          <item> go down </item>
+          <item> scroll down </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>DIRECTION_PREVIOUS</tag>
+        <one-of>
+          <item> previous </item>
+          <item> back </item>
+          <item> go back </item>
+          <item> scroll back </item>
+        </one-of>
+      </item>
+
+      <item>
+        <tag>DIRECTION_NEXT</tag>
+        <one-of>
+          <item> next </item>
+          <item> forward </item>
+          <item> go forward </item>
+          <item> scroll forward </item>
+        </one-of>
+      </item>
+
+      <item>
+        <tag>DIRECTION_SELECT</tag>
+        <one-of>
+          <item> select </item>
+          <item> select item </item>
+        </one-of>
+      </item>
+
+      <item>
+         <tag>MEDIA_PLAY</tag>
+         <one-of>
+            <item> play </item>
+         </one-of>
+      </item>
+
+      <item>
+         <tag>MEDIA_STOP</tag>
+         <one-of>
+            <item> stop </item>
+         </one-of>
+      </item>
+
+      <item>
+         <tag>MEDIA_PAUSE</tag>
+         <one-of>
+            <item> pause </item>
+         </one-of>
+      </item>
+
+      <item>
+         <tag>MEDIA_FORWARD</tag>
+         <one-of>
+            <item> fast forward </item>
+            <item> skip forward </item>
+         </one-of>
+      </item>
+
+      <item>
+         <tag>MEDIA_REWIND</tag>
+         <one-of>
+            <item> rewind </item>
+            <item> skip backward </item>
+         </one-of>
+      </item>
+
+      <item>
+         <tag>MEDIA_INFO</tag>
+         <one-of>
+            <item> info </item>
+         </one-of>
+      </item>
+
+
+
     </one-of>
   </rule>
 </grammar>

@@ -8,25 +8,49 @@ using Microsoft.Speech.AudioFormat;
 using Microsoft.Speech.Recognition;
 using Microsoft.Speech.Synthesis;
 using System.IO;
+using System.Diagnostics;
 
 namespace VRKC
 {
     class Program
     {
         private static SpeechRecognitionEngine sre;
-
-
         private static KinectSensor sensor;
+        private static ProcessStartInfo pyProcessStart;
+        private static Process pyProcess;
 
         static void Main(string[] args)
         {
+            //Initializy python starting info
+            pyProcessStart = new ProcessStartInfo("C:\\Python27\\python.exe");
+            //pyProcessStart.RedirectStandardError = true;
+            pyProcessStart.RedirectStandardInput = true;
+            pyProcessStart.RedirectStandardOutput = true;
+            pyProcessStart.UseShellExecute = false;
+            /*
+                pyProcess = new Process();
+                pyProcess.StartInfo = pyProcessStart;
+                pyProcess.Start();
+
+               
+                */
+           
+            pyProcess = Process.Start(pyProcessStart);
+
+            //Start up python
+            pyProcess.StandardInput.AutoFlush = true;
+
+            pyProcess.StandardInput.WriteLine("from kodipydent import Kodi");
+            pyProcess.StandardInput.WriteLine("mykodi = Kodi('127.0.0.1')");
+            //inWriter.Close();
+
             //Initialize Kinect
             Console.WriteLine("Waiting for Kinect...");
 
             KinectSensorChooser chooser = new KinectSensorChooser();
             chooser.Start();
+            
 
-            Console.Clear();
             Console.WriteLine("Waiting for sensor");
 
             while (chooser.Status != ChooserStatus.SensorStarted)
@@ -48,7 +72,7 @@ namespace VRKC
             sre.SpeechRecognized += SpeechRecognized;
             sre.SpeechRecognitionRejected += SpeechRejected;
 
-            using (var memoryStream = new MemoryStream(Encoding.ASCII.GetBytes(File.ReadAllText("data\\SpeechGrammar.xml"))))
+            using (var memoryStream = new MemoryStream(Encoding.ASCII.GetBytes(File.ReadAllText("data\\SpeechGrammar2.xml"))))
             {
                 var g = new Grammar(memoryStream);
                 sre.LoadGrammar(g);
@@ -69,12 +93,27 @@ namespace VRKC
         private static void SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             // Speech utterance confidence below which we treat speech as if it hadn't been heard
-            const double ConfidenceThreshold = 0.3;
+            const double ConfidenceThreshold = 0.7;
+
+            Console.WriteLine(e.Result.Semantics.Value.ToString() + " (" + e.Result.Confidence.ToString() + ")");
 
             if (e.Result.Confidence > ConfidenceThreshold)
             {
-                Console.WriteLine(e.Result.Semantics.Value.ToString());
+                
+                switch (e.Result.Semantics.Value.ToString())
+                {
+                    case "MEDIA_PLAY":
+                        Process.Start("python","-c \"from kodipydent import Kodi;mykodi = Kodi('127.0.0.1');mykodi.Player.PlayPause(1,play=True)\"",);
+                        break;
+                    case "MEDIA_PAUSE":
+                        Process.Start("python", "-c \"from kodipydent import Kodi;mykodi = Kodi('127.0.0.1');mykodi.Player.PlayPause(1,play=False)\"");
+                        break;
+                    default:
+                        break;
+                }
+
             }
+
         }
 
         private static void SpeechRejected(object sender, SpeechRecognitionRejectedEventArgs e)

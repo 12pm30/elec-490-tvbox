@@ -5,22 +5,52 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRKC", "VRKC.csproj", "{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Kinect.Toolkit", "C:\Users\mitch\Desktop\kinect sample\Microsoft.Kinect.Toolkit\Microsoft.Kinect.Toolkit.csproj", "{C6F9C31B-6130-4443-A5CC-EF0664552ECD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Kinect.Toolkit", "..\Microsoft.Kinect.Toolkit\Microsoft.Kinect.Toolkit.csproj", "{C6F9C31B-6130-4443-A5CC-EF0664552ECD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Local|Any CPU = Local|Any CPU
+		Local-Debug|Any CPU = Local-Debug|Any CPU
+		PieterLocal|Any CPU = PieterLocal|Any CPU
+		Pieter-Uys|Any CPU = Pieter-Uys|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Remote|Any CPU = Remote|Any CPU
+		VM|Any CPU = VM|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}.Local|Any CPU.ActiveCfg = Release|Any CPU
+		{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}.Local|Any CPU.Build.0 = Release|Any CPU
+		{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}.Local-Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}.Local-Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}.PieterLocal|Any CPU.ActiveCfg = Release|Any CPU
+		{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}.PieterLocal|Any CPU.Build.0 = Release|Any CPU
+		{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}.Pieter-Uys|Any CPU.ActiveCfg = Release|Any CPU
+		{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}.Pieter-Uys|Any CPU.Build.0 = Release|Any CPU
 		{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}.Remote|Any CPU.ActiveCfg = Release|Any CPU
+		{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}.Remote|Any CPU.Build.0 = Release|Any CPU
+		{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}.VM|Any CPU.ActiveCfg = Release|Any CPU
+		{19BCE8CB-54CE-43FE-8ABA-AD0F7B58B3BD}.VM|Any CPU.Build.0 = Release|Any CPU
 		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.Local|Any CPU.ActiveCfg = Release|Any CPU
+		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.Local|Any CPU.Build.0 = Release|Any CPU
+		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.Local-Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.Local-Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.PieterLocal|Any CPU.ActiveCfg = Release|Any CPU
+		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.PieterLocal|Any CPU.Build.0 = Release|Any CPU
+		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.Pieter-Uys|Any CPU.ActiveCfg = Release|Any CPU
+		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.Pieter-Uys|Any CPU.Build.0 = Release|Any CPU
 		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.Remote|Any CPU.ActiveCfg = Release|Any CPU
+		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.Remote|Any CPU.Build.0 = Release|Any CPU
+		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.VM|Any CPU.ActiveCfg = Release|Any CPU
+		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.VM|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
