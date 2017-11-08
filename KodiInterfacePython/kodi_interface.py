@@ -29,17 +29,18 @@ class KodiInterface(object):
     def _client_thread(self, clt_socket, clt_address):
         print("Received connection from " + str(clt_address))
         sock_stream = clt_socket.makefile('r+')
-        command_dict = { 'up' : self._input_up,
-                         'down': self._input_down,
-                         'right': self._input_right,
-                         'left': self._input_left,
-                         'select': self._input_select,
-                         'back': self._input_back,
-                         'home': self._input_home,
+        command_dict = { 'INPUT_UP' : self._input_up,
+                         'INPUT_DOWN': self._input_down,
+                         'INPUT_RIGHT': self._input_right,
+                         'INPUT_LEFT': self._input_left,
+                         'INPUT_SELECT': self._input_select,
+                         'INPUT_BACK': self._input_back,
+                         'INPUT_HOME': self._input_home,
                          'ls_movies': self._list_movies,
-                         'play_pause': self._player_play_pause,
-                         'stop': self._player_stop,
-                         'open': self._player_open
+                         'PLAYER_PLAY': self._player_play,
+                         'PLAYER_PAUSE': self._player_pause,
+                         'PLAYER_STOP': self._player_stop,
+                         'PLAYER_OPEN': self._player_open
                        }
         for line in sock_stream:
             split_line = line.strip().split(' ')
@@ -87,10 +88,15 @@ class KodiInterface(object):
             sock_stream.write('Content ID must be an integer\n')
         self.kodi.Player.Open(item={'movieid':content_id})
 
-    def _player_play_pause(self, sock_stream):
+    def _player_play(self, sock_stream):
         player_ids = [rec['playerid'] for rec in self.kodi.Player.GetActivePlayers()['result']]
         for playerid in player_ids:
-            self.kodi.Player.PlayPause(playerid=playerid)
+            self.kodi.Player.PlayPause(playerid=playerid,play=True)
+
+    def _player_pause(self, sock_stream):
+        player_ids = [rec['playerid'] for rec in self.kodi.Player.GetActivePlayers()['result']]
+        for playerid in player_ids:
+            self.kodi.Player.PlayPause(playerid=playerid,play=False)
 
     def _player_stop(self, sock_stream):
         player_ids = [rec['playerid'] for rec in self.kodi.Player.GetActivePlayers()['result']]
