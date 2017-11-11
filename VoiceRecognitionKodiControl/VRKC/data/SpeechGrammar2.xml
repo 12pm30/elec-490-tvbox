@@ -48,7 +48,7 @@
       </item>
 
       <item>
-        <tag>DIRECTION_UP</tag>
+        <tag>INPUT_UP</tag>
         <one-of>
           <item> up </item>
           <item> go up </item>
@@ -56,7 +56,7 @@
         </one-of>
       </item>
       <item>
-        <tag>DIRECTION_DOWN</tag>
+        <tag>INPUT_DOWN</tag>
         <one-of>
           <item> up </item>
           <item> go down </item>
@@ -64,7 +64,7 @@
         </one-of>
       </item>
       <item>
-        <tag>DIRECTION_PREVIOUS</tag>
+        <tag>INPUT_PREVIOUS</tag>
         <one-of>
           <item> previous </item>
           <item> back </item>
@@ -74,7 +74,7 @@
       </item>
 
       <item>
-        <tag>DIRECTION_NEXT</tag>
+        <tag>INPUT_NEXT</tag>
         <one-of>
           <item> next </item>
           <item> forward </item>
@@ -84,7 +84,7 @@
       </item>
 
       <item>
-        <tag>DIRECTION_SELECT</tag>
+        <tag>INPUT_SELECT</tag>
         <one-of>
           <item> select </item>
           <item> select item </item>
@@ -92,28 +92,28 @@
       </item>
 
       <item>
-         <tag>MEDIA_PLAY</tag>
+         <tag>PLAYER_PLAY</tag>
          <one-of>
             <item> play </item>
          </one-of>
       </item>
 
       <item>
-         <tag>MEDIA_STOP</tag>
+         <tag>PLAYER_STOP</tag>
          <one-of>
             <item> stop </item>
          </one-of>
       </item>
 
       <item>
-         <tag>MEDIA_PAUSE</tag>
+         <tag>PLAYER_PAUSE</tag>
          <one-of>
             <item> pause </item>
          </one-of>
       </item>
 
       <item>
-         <tag>MEDIA_FORWARD</tag>
+         <tag>PLAYER_FORWARD</tag>
          <one-of>
             <item> fast forward </item>
             <item> skip forward </item>
@@ -121,7 +121,7 @@
       </item>
 
       <item>
-         <tag>MEDIA_REWIND</tag>
+         <tag>PLAYER_REWIND</tag>
          <one-of>
             <item> rewind </item>
             <item> skip backward </item>
@@ -129,7 +129,7 @@
       </item>
 
       <item>
-         <tag>MEDIA_INFO</tag>
+         <tag>PLAYER_INFO</tag>
          <one-of>
             <item> info </item>
          </one-of>

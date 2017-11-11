@@ -27,7 +27,7 @@ class KodiInterface(object):
             clt_thread.run()
 
     def _client_thread(self, clt_socket, clt_address):
-        print("Received connection from " + str(clt_address))
+        print("Received connection from " + str(clt_address))	
         sock_stream = clt_socket.makefile('r+')
         command_dict = { 'INPUT_UP' : self._input_up,
                          'INPUT_DOWN': self._input_down,
@@ -46,14 +46,17 @@ class KodiInterface(object):
             split_line = line.strip().split(' ')
             command = split_line[0]
             params = split_line[1:]
+			
+            print (command)
+			
             if command in command_dict:
                 command_dict[command](sock_stream, *params)
             else:
                 sock_stream.write('Unrecognized command\n')
             sock_stream.flush()
-
         sock_stream.close()
         clt_socket.close()
+        		
         print("Connection from %s terminated" % (str(clt_address)))
 
     def _input_up(self, sock_stream):

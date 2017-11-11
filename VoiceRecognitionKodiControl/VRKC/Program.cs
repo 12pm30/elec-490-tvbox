@@ -9,6 +9,8 @@ using Microsoft.Speech.Recognition;
 using Microsoft.Speech.Synthesis;
 using System.IO;
 using System.Diagnostics;
+using System.Net;
+using System.Net.Sockets;
 
 namespace VRKC
 {
@@ -16,33 +18,15 @@ namespace VRKC
     {
         private static SpeechRecognitionEngine sre;
         private static KinectSensor sensor;
-        private static ProcessStartInfo pyProcessStart;
-        private static Process pyProcess;
+        private static TcpClient tc;
+        private static StreamWriter sjw;
 
         static void Main(string[] args)
         {
-            //Initializy python starting info
-            pyProcessStart = new ProcessStartInfo("C:\\Python27\\python.exe");
-            //pyProcessStart.RedirectStandardError = true;
-            pyProcessStart.RedirectStandardInput = true;
-            pyProcessStart.RedirectStandardOutput = true;
-            pyProcessStart.UseShellExecute = false;
-            /*
-                pyProcess = new Process();
-                pyProcess.StartInfo = pyProcessStart;
-                pyProcess.Start();
-
-               
-                */
-           
-            pyProcess = Process.Start(pyProcessStart);
-
-            //Start up python
-            pyProcess.StandardInput.AutoFlush = true;
-
-            pyProcess.StandardInput.WriteLine("from kodipydent import Kodi");
-            pyProcess.StandardInput.WriteLine("mykodi = Kodi('127.0.0.1')");
-            //inWriter.Close();
+            tc = new TcpClient("127.0.0.1", 14242);
+            tc.NoDelay = true;
+            sjw = new StreamWriter(tc.GetStream());
+            sjw.AutoFlush = true;
 
             //Initialize Kinect
             Console.WriteLine("Waiting for Kinect...");
@@ -92,6 +76,7 @@ namespace VRKC
 
         private static void SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
+            
             // Speech utterance confidence below which we treat speech as if it hadn't been heard
             const double ConfidenceThreshold = 0.7;
 
@@ -99,21 +84,18 @@ namespace VRKC
 
             if (e.Result.Confidence > ConfidenceThreshold)
             {
-                
-                switch (e.Result.Semantics.Value.ToString())
+                try
                 {
-                    case "MEDIA_PLAY":
-                        Process.Start("python","-c \"from kodipydent import Kodi;mykodi = Kodi('127.0.0.1');mykodi.Player.PlayPause(1,play=True)\"",);
-                        break;
-                    case "MEDIA_PAUSE":
-                        Process.Start("python", "-c \"from kodipydent import Kodi;mykodi = Kodi('127.0.0.1');mykodi.Player.PlayPause(1,play=False)\"");
-                        break;
-                    default:
-                        break;
+
+                    sjw.WriteLine(e.Result.Semantics.Value.ToString());
+                    
                 }
+                catch
+                {
 
+                }
             }
-
+            
         }
 
         private static void SpeechRejected(object sender, SpeechRecognitionRejectedEventArgs e)
