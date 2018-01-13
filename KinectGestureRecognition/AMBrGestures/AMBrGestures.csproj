@@ -33,15 +33,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Gestures">
-      <HintPath>C:\Users\Ryan Baxter\AppData\Roaming\Microsoft\Prague\PragueVersions\LatestVersion\Microsoft.Gestures.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Gestures.Endpoint">
-      <HintPath>C:\Users\Ryan Baxter\AppData\Roaming\Microsoft\Prague\PragueVersions\LatestVersion\SDK\Microsoft.Gestures.Endpoint.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Gestures.Protocol">
-      <HintPath>C:\Users\Ryan Baxter\AppData\Roaming\Microsoft\Prague\PragueVersions\LatestVersion\Microsoft.Gestures.Protocol.dll</HintPath>
-    </Reference>
+     <Reference Include="Microsoft.Gestures">
+       <HintPath>$(MicrosoftGesturesInstallDir)\Microsoft.Gestures.dll</HintPath>
+     </Reference>
+     <Reference Include="Microsoft.Gestures.Endpoint">
+       <HintPath>$(MicrosoftGesturesInstallDir)\SDK\Microsoft.Gestures.Endpoint.dll</HintPath>
+     </Reference>
+     <Reference Include="Microsoft.Gestures.Protocol">
+       <HintPath>$(MicrosoftGesturesInstallDir)\Microsoft.Gestures.Protocol.dll</HintPath>
+     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -61,7 +61,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
