@@ -12,33 +12,41 @@ namespace AMBrGestures
 {
     class Program
     {
-        private GestureRecognition _gestureRecog;
-        public void mainProgram()
+
+        private static void KinectActionEventHandler(object sender, KinectRecognizedActionEventArgs e)
         {
-            Console.WriteLine("Starting");
-
-            _gestureRecog = new GestureRecognition();
-            _gestureRecog.Init();
-            while (!_gestureRecog.ready) { };
-
-            Console.WriteLine("Ready");
-
-            //_gestureRecog.GesturesDetectionStatusChanged += (oldStatus, newStatus) => Dispatcher.InvokeAsync(() => txtDetectionServiceStatus.Text = $"Gestures Detection Service [{newStatus.Status}]");
-
-            _gestureRecog.GestureChanged += (newGesture) => 
-            {
-                Console.WriteLine(newGesture);
-            };
-
-            while (!_gestureRecog.done) { };
-
-            _gestureRecog?.Dispose();
+            Console.WriteLine("Kinect Action Recognized");
+            Console.WriteLine("Action Source: {0}", e.ActionSource.ToString());
+            Console.WriteLine("Action Type: {0}", e.ActionType.ToString());
+            Console.WriteLine("");
         }
 
         static void Main(string[] args)
         {
-            var program = new Program();
-            program.mainProgram();
+            Console.WriteLine("Starting");
+
+            GestureRecognition _gestureRecog;
+            AmbrSpeechRecognition _speechRecog;
+
+            //The gesture and speech services don't actually care if there's a sensor attached. it will just return nothing
+            _gestureRecog = new GestureRecognition();
+            _speechRecog = new AmbrSpeechRecognition();
+
+            //Subscribe to the events
+            _gestureRecog.KinectActionRecognized += KinectActionEventHandler;
+            _speechRecog.KinectActionRecognized += KinectActionEventHandler;
+
+            //Register the gestures
+            _gestureRecog.Init().Wait();
+
+            Console.WriteLine("Ready");
+
+            //Wait until the user hits "escape"
+            while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape))
+            {
+                // do something
+            }
+
         }
     }
 }

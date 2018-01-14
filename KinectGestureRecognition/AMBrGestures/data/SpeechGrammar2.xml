@@ -1,0 +1,142 @@
+﻿<grammar version="1.0" xml:lang="en-US" root="rootRule" tag-format="semantics/1.0-literals" xmlns="http://www.w3.org/2001/06/grammar">
+  <rule id="rootRule">
+    <one-of>
+      <item>
+        <tag>SCREEN_OFF</tag>
+        <one-of>
+          <item> turn off </item>
+          <item> screen off </item>
+        </one-of>
+      </item>
+
+      <item>
+        <tag>SCREEN_HOME</tag>
+        <one-of>
+          <item> home </item>
+          <item> home screen</item>
+          <item> show home </item>
+        </one-of>
+      </item>
+
+      <item>
+        <tag>SCREEN_PHOTOS</tag>
+        <one-of>
+          <item> photos </item>
+          <item> show photos </item>
+          <item> play photos </item>
+        </one-of>
+      </item>
+
+      <item>
+        <tag>SCREEN_VIDEOS</tag>
+        <one-of>
+          <item> videos </item>
+          <item> show videos </item>
+          <item> play videos </item>
+        </one-of>
+      </item>
+
+      <item>
+        <tag>SCREEN_MUSIC</tag>
+        <one-of>
+          <item> music </item>
+          <item> show music </item>
+          <item> listen to music </item>
+          <item> listen music </item>
+          <item> play music </item>
+        </one-of>
+      </item>
+
+      <item>
+        <tag>INPUT_UP</tag>
+        <one-of>
+          <item> up </item>
+          <item> go up </item>
+          <item> scroll up </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>INPUT_DOWN</tag>
+        <one-of>
+          <item> up </item>
+          <item> go down </item>
+          <item> scroll down </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>INPUT_PREVIOUS</tag>
+        <one-of>
+          <item> previous </item>
+          <item> back </item>
+          <item> go back </item>
+          <item> scroll back </item>
+        </one-of>
+      </item>
+
+      <item>
+        <tag>INPUT_NEXT</tag>
+        <one-of>
+          <item> next </item>
+          <item> forward </item>
+          <item> go forward </item>
+          <item> scroll forward </item>
+        </one-of>
+      </item>
+
+      <item>
+        <tag>INPUT_SELECT</tag>
+        <one-of>
+          <item> select </item>
+          <item> select item </item>
+        </one-of>
+      </item>
+
+      <item>
+         <tag>PLAYER_PLAY</tag>
+         <one-of>
+            <item> play </item>
+         </one-of>
+      </item>
+
+      <item>
+         <tag>PLAYER_STOP</tag>
+         <one-of>
+            <item> stop </item>
+         </one-of>
+      </item>
+
+      <item>
+         <tag>PLAYER_PAUSE</tag>
+         <one-of>
+            <item> pause </item>
+         </one-of>
+      </item>
+
+      <item>
+         <tag>PLAYER_FORWARD</tag>
+         <one-of>
+            <item> fast forward </item>
+            <item> skip forward </item>
+         </one-of>
+      </item>
+
+      <item>
+         <tag>PLAYER_REWIND</tag>
+         <one-of>
+            <item> rewind </item>
+            <item> skip backward </item>
+         </one-of>
+      </item>
+
+      <item>
+         <tag>PLAYER_INFO</tag>
+         <one-of>
+            <item> info </item>
+         </one-of>
+      </item>
+
+
+
+    </one-of>
+  </rule>
+</grammar>

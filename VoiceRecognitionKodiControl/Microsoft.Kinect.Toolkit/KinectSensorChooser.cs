@@ -262,7 +262,7 @@ namespace Microsoft.Kinect.Toolkit
 
         private static ChooserStatus GetErrorStatusFromSensor(KinectSensor sensor)
         {
-            ChooserStatus retval;
+            /*ChooserStatus retval;
             switch (sensor.Status)
             {
             case KinectStatus.Undefined:
@@ -299,8 +299,8 @@ namespace Microsoft.Kinect.Toolkit
             default:
                 throw new ArgumentOutOfRangeException("sensor");
             }
-
-            return retval;
+            */
+            return ChooserStatus.SensorError;
         }
 
         private void KinectSensorsOnStatusChanged(object sender, StatusChangedEventArgs e)

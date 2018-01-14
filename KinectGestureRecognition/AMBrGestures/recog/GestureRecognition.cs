@@ -8,19 +8,11 @@ using System.Windows.Threading;
 
 namespace AMBrGestures
 {
-    public enum GestureType : byte
-    {
-        Pause,
-        PlaySelect,
-        Rewind,
-        Forward,
-        Menu,
-        None,
-    };
+
 
     public delegate void GestureChangedHandler(GestureType newGesture);
 
-    public sealed class GestureRecognition : IDisposable
+    public sealed class GestureRecognition : IDisposable, IKinectActionRecognizer
 	{
         private GesturesServiceEndpoint _gesturesService;
         private Gesture _pauseGesture;
@@ -30,35 +22,35 @@ namespace AMBrGestures
         private Gesture _menuGesture;
 
         public event StatusChangedHandler GesturesDetectionStatusChanged;
-        public event GestureChangedHandler GestureChanged;
-        public Boolean ready = false;
-        public Boolean done = false;
+        //public event GestureChangedHandler GestureChanged;
+        public event KinectActionEventHandler KinectActionRecognized;
 
         public async Task Init()
         {
             var pausePose = new HandPose("PausePose", new PalmPose(new AnyHandContext(), PoseDirection.Forward, PoseDirection.Up),
                     new FingerPose(new AllFingersContext(), FingerFlexion.Open, PoseDirection.Up));
-            pausePose.Triggered += (s, arg) => GestureChanged?.Invoke(GestureType.Pause);
+            pausePose.Triggered += (s, arg) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureType.Pause.ToString()));
 
             var selectPose = new HandPose("selectPose", new PalmPose(new AnyHandContext()), 
                 new FingerPose(Finger.Index, FingerFlexion.OpenStretched, PoseDirection.Forward),
                 new FingerPose(new AllFingersContext(new [] { Finger.Middle, Finger.Ring, Finger.Pinky}), PoseDirection.Backward));
-            selectPose.Triggered += (s, arg) => GestureChanged?.Invoke(GestureType.PlaySelect);
+            selectPose.Triggered += (s, arg) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureType.PlaySelect.ToString()));
 
             var menuPose = new HandPose("menuPose", new PalmPose(new AnyHandContext(), PoseDirection.Backward, PoseDirection.Down),
                 new FingerPose (new AllFingersContext(new[] { Finger.Index, Finger.Middle, Finger.Ring }), FingerFlexion.OpenStretched, PoseDirection.Down),
                 new FingerPose (new AllFingersContext(new [] {Finger.Thumb, Finger.Pinky}), FingerFlexion.Folded)
                 );
-            menuPose.Triggered += (s, arg) => GestureChanged?.Invoke(GestureType.Menu);
+            //menuPose.Triggered += (s, arg) => KinectActionRecognized?.Invoke(GestureType.Menu);
+            menuPose.Triggered += (s, arg) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureType.Menu.ToString()));
 
             var pinchPoseRewind = GeneratePinchPose("PinchPoseRewind");
             var pinchPoseForward = GeneratePinchPose("PinchPoseForward");
 
             var rewindMotion = new HandMotion("RewindMotion", new PalmMotion(VerticalMotionSegment.Left));
-            rewindMotion.Triggered += (s, args) => GestureChanged?.Invoke(GestureType.Rewind);
+            rewindMotion.Triggered += (s, args) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureType.Rewind.ToString()));
 
             var forwardMotion = new HandMotion("ForwardMotion", new PalmMotion(VerticalMotionSegment.Right));
-            forwardMotion.Triggered += (s, args) => GestureChanged?.Invoke(GestureType.Forward);
+            forwardMotion.Triggered += (s, args) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureType.Forward.ToString()));
 
             var keepRewindingPose = GeneratePinchPose("KeepRewindPose");
             var keepForwardingPose = GeneratePinchPose("KeepForwardingPose");
@@ -68,11 +60,11 @@ namespace AMBrGestures
 
             _rewindGesture = new Gesture("RewindGesture", pinchPoseRewind, rewindMotion, keepRewindingPose, releasePoseRewind);
 
-            _rewindGesture.IdleTriggered += (s, args) => GestureChanged?.Invoke(GestureType.None);
+            _rewindGesture.IdleTriggered += (s, args) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureType.None.ToString()));
 
             _forwardGesture = new Gesture("ForwardGesture", pinchPoseForward, forwardMotion, keepForwardingPose, releasePoseForward);
 
-            _forwardGesture.IdleTriggered += (s, args) => GestureChanged?.Invoke(GestureType.None);
+            _forwardGesture.IdleTriggered += (s, args) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureType.None.ToString()));
 
             var shouldNeverHappen = new HandPose("shouldNotHappen", new PalmPose(new AnyHandContext(), PoseDirection.Forward, PoseDirection.Down),
                                                        new FingerPose(new AllFingersContext(), FingerFlexion.Open));
@@ -95,7 +87,6 @@ namespace AMBrGestures
             await _gesturesService.RegisterGesture(_rewindGesture);
             await _gesturesService.RegisterGesture(_forwardGesture);
             await _gesturesService.RegisterGesture(_menuGesture);
-            ready = true;
         }
 
         public void Dispose() => _gesturesService?.Dispose();
