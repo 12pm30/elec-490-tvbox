@@ -15,10 +15,7 @@ namespace AMBrGestures
 
         private static void KinectActionEventHandler(object sender, KinectRecognizedActionEventArgs e)
         {
-            Console.WriteLine("Kinect Action Recognized");
-            Console.WriteLine("Action Source: {0}", e.ActionSource.ToString());
-            Console.WriteLine("Action Type: {0}", e.ActionType.ToString());
-            Console.WriteLine("");
+            Console.WriteLine("Source: {0}   Action: {1} ", e.ActionSource.ToString(), e.ActionType.ToString());
         }
 
         static void Main(string[] args)
