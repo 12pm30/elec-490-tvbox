@@ -16,6 +16,31 @@ namespace AMBrGestures
         None,
     };
 
+    //This is a mirror of the speech grammar XML file
+    public enum GestureAction : byte
+    {
+        ACTIVATION_PHRASE,
+        DEACTIVATION_PHRASE,
+        SCREEN_OFF,
+        SCREEN_HOME,
+        SCREEN_PHOTOS,
+        SCREEN_VIDEOS,
+        SCREEN_MUSIC,
+        INPUT_UP,
+        INPUT_DOWN,
+        INPUT_PREVIOUS,
+        INPUT_NEXT,
+        INPUT_SELECT,
+        INPUT_CONTEXTMENU,
+        PLAYER_PLAY,
+        PLAYER_STOP,
+        PLAYER_PAUSE,
+        PLAYER_FORWARD,
+        PLAYER_REWIND,
+        PLAYER_SEEKDONE,
+        PLAYER_INFO
+    }
+
     public enum KinectActionRecognizedSource
     {
         Speech,
@@ -33,16 +58,16 @@ namespace AMBrGestures
     public class KinectRecognizedActionEventArgs : EventArgs
     {
         private KinectActionRecognizedSource _actionSource;
-        private string _actionType;
+        private GestureAction _actionType;
 
-        public KinectRecognizedActionEventArgs(KinectActionRecognizedSource source, string type)
+        public KinectRecognizedActionEventArgs(KinectActionRecognizedSource source, GestureAction type)
         {
             _actionSource = source;
             _actionType = type;
         }
 
         public KinectActionRecognizedSource ActionSource { get { return _actionSource; } }
-        public string ActionType { get { return _actionType; } }
+        public GestureAction ActionType { get { return _actionType; } }
     }
 
     class RecognizerCommon

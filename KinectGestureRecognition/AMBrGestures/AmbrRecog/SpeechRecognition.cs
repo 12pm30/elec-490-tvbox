@@ -14,7 +14,7 @@ namespace AMBrGestures
     class AmbrSpeechRecognition : IKinectActionRecognizer
     {
         private SpeechRecognitionEngine ambrRecognitionEngine = null;
-        private RecognizerInfo ambrRecognizerInfo = null;
+        //private RecognizerInfo ambrRecognizerInfo = null;
         private util.KinectAudioStream ambrAudioStream = null;
 
         private KinectSensor ambrSensor = null;
@@ -35,7 +35,7 @@ namespace AMBrGestures
             ambrRecognitionEngine = new SpeechRecognitionEngine(GetKinectRecognizer());
 
             //Install the speech grammar
-            using (var memoryStream = new MemoryStream(Encoding.ASCII.GetBytes(File.ReadAllText("data\\SpeechGrammar2.xml"))))
+            using (var memoryStream = new MemoryStream(Encoding.ASCII.GetBytes(File.ReadAllText("AmbrData\\SpeechGrammar2.xml"))))
             {
                 var g = new Grammar(memoryStream);
                 ambrRecognitionEngine.LoadGrammar(g);
@@ -59,7 +59,7 @@ namespace AMBrGestures
 
             if(e.Result.Confidence > ConfidenceThreshold)
             {
-                KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Speech, e.Result.Semantics.Value.ToString()));
+                KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Speech, (GestureAction)Enum.Parse(typeof(GestureAction), e.Result.Semantics.Value.ToString())));
             }
         }
 

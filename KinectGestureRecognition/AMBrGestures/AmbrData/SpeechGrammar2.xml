@@ -2,6 +2,20 @@
   <rule id="rootRule">
     <one-of>
       <item>
+        <tag>ACTIVATION_PHRASE</tag>
+        <one-of>
+          <item> hey amber </item>
+        </one-of>
+      </item>
+
+      <item>
+        <tag>DEACTIVATION_PHRASE</tag>
+        <one-of>
+          <item> bye amber </item>
+        </one-of>
+      </item>
+      
+      <item>
         <tag>SCREEN_OFF</tag>
         <one-of>
           <item> turn off </item>
@@ -88,6 +102,13 @@
         <one-of>
           <item> select </item>
           <item> select item </item>
+        </one-of>
+      </item>
+
+      <item>
+        <tag>INPUT_CONTEXTMENU</tag>
+        <one-of>
+          <item> menu </item>
         </one-of>
       </item>
 
