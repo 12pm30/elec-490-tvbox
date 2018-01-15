@@ -20,7 +20,7 @@ class KodiInterface(object):
                 print('Could not connect to Kodi, will retry in 10 seconds.')
                 time.sleep(10)
 
-    def start_socket(self, socket_port = 14242, scope = '127.0.0.1'):
+    def start_socket(self, socket_port = int(sys.argv[1]), scope = '127.0.0.1'):
         svr_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         svr_socket.bind((scope, socket_port))
         svr_socket.listen(5)
@@ -46,30 +46,38 @@ class KodiInterface(object):
                          'PLAYER_OPEN': self._player_open,
                          'GUI_NOTIFICATION': self._gui_notification
                        }
-        for line in sock_stream:
-            split_line = line.strip().split(' ')
-            command = split_line[0]
-            params = split_line[1:]
 
-            if command in command_dict:
-                try:
-                    cmdEx = command_dict[command](sock_stream, *params)
+        try:
+            for line in sock_stream:
 
-                    if u'error' in cmdEx.keys():
-                        print(cmdEx['error']['data']['stack']['message'])
-                        raise KodiApiCommandFailureError("shitfuck")
+                    split_line = line.strip().split(' ')
+                    command = split_line[0]
+                    params = split_line[1:]
+
+                    if command in command_dict:
+                        try:
+                            cmdEx = command_dict[command](sock_stream, *params)
+
+                            if u'error' in cmdEx.keys():
+                                print(cmdEx['error']['data']['stack']['message'])
+                                raise KodiApiCommandFailureError("shitfuck")
+                            else:
+                                print(command)
+
+                        except Exception as e:
+                            print ("Command Error: {} - {}".format(type(e).__name__,str(e)))
                     else:
-                        print(command)
+                        sock_stream.write('Unrecognized command\n')
+                    sock_stream.flush()
 
-                except Exception as e:
-                    print ("Command Error: {} - {}".format(type(e).__name__,str(e)))
-            else:
-                sock_stream.write('Unrecognized command\n')
-            sock_stream.flush()
+        except:
+            pass
+
         sock_stream.close()
         clt_socket.close()
 
         print("Connection from %s terminated" % (str(clt_address)))
+        sys.exit()
 
     def _gui_notification(self, sock_stream, tit, msg, tim):
         return self.kodi.GUI.ShowNotification(title=tit, message=msg, displaytime="penis")
@@ -127,7 +135,9 @@ def exit_script(signal, frame):
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, exit_script)
+    print('AMBr Python Interface')
     print('To exit, press ctrl+break (Fn+Ctrl+B)')
+    print('Current Port: ' + str(sys.argv[1]))
     ki = KodiInterface('localhost', 'kodi', 'Password123', 8080)
     print("Connected to Kodi, starting socket")
     svr_thread = threading.Thread(target=ki.start_socket)

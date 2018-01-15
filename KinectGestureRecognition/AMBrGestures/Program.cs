@@ -25,6 +25,8 @@ namespace AMBrGestures
             GestureRecognition _gestureRecog;
             AmbrSpeechRecognition _speechRecog;
 
+            KodiClient k = new KodiClient();
+
             //The gesture and speech services don't actually care if there's a sensor attached. it will just return nothing
             _gestureRecog = new GestureRecognition();
             _speechRecog = new AmbrSpeechRecognition();
@@ -32,6 +34,9 @@ namespace AMBrGestures
             //Subscribe to the events
             _gestureRecog.KinectActionRecognized += KinectActionEventHandler;
             _speechRecog.KinectActionRecognized += KinectActionEventHandler;
+
+            _gestureRecog.KinectActionRecognized += k.KinectActionEventHandler;
+            _speechRecog.KinectActionRecognized += k.KinectActionEventHandler;
 
             //Register the gestures
             _gestureRecog.Init().Wait();
