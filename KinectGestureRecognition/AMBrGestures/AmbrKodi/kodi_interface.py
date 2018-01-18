@@ -131,6 +131,17 @@ class KodiInterface(object):
         for playerid in player_ids:
             self.kodi.Player.Stop(playerid=playerid)
 
+    def _player_forward(self, sock_stream):
+        player_ids = [rec['playerid'] for rec in self.kodi.Player.GetActivePlayers()['result']]
+        for playerid in player_ids:
+            self.kodi.Player.SetSpeed(playerid=playerid, speed=16)
+
+    def _player_rewind(self, sock_stream):
+        player_ids = [rec['playerid'] for rec in self.kodi.Player.GetActivePlayers()['result']]
+        for playerid in player_ids:
+            self.kodi.Player.SetSpeed(playerid=playerid, speed=-16)
+
+
 def exit_script(signal, frame):
     sys.exit(0)
 
