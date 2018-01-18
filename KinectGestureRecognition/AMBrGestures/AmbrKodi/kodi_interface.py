@@ -20,7 +20,7 @@ class KodiInterface(object):
                 print('Could not connect to Kodi, will retry in 10 seconds.')
                 time.sleep(10)
 
-    def start_socket(self, socket_port = int(sys.argv[1]), scope = '127.0.0.1'):
+    def start_socket(self, socket_port, scope = '127.0.0.1'):
         svr_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         svr_socket.bind((scope, socket_port))
         svr_socket.listen(5)
@@ -60,7 +60,7 @@ class KodiInterface(object):
 
                             if u'error' in cmdEx.keys():
                                 print(cmdEx['error']['data']['stack']['message'])
-                                raise KodiApiCommandFailureError("shitfuck")
+                                raise KodiApiCommandFailureError(cmdEx['error']['data']['stack']['message'])
                             else:
                                 print(command)
 
@@ -80,7 +80,7 @@ class KodiInterface(object):
         sys.exit()
 
     def _gui_notification(self, sock_stream, tit, msg, tim):
-        return self.kodi.GUI.ShowNotification(title=tit, message=msg, displaytime="penis")
+        return self.kodi.GUI.ShowNotification(title=tit, message=msg, displaytime=tim)
 
     def _input_up(self, sock_stream):
         return self.kodi.Input.Up()
@@ -106,6 +106,7 @@ class KodiInterface(object):
     def _list_movies(self, sock_stream):
         for movie in self.kodi.VideoLibrary.GetMovies()['result']['movies']:
             sock_stream.write(str(movie['movieid']) + ":" + str(movie['label']) + '\n')
+        sock_stream.write('DONE\n')
 
     def _player_open(self, sock_stream, content_id):
         try:
@@ -130,16 +131,37 @@ class KodiInterface(object):
         for playerid in player_ids:
             self.kodi.Player.Stop(playerid=playerid)
 
+    def _player_forward(self, sock_stream):
+        player_ids = [rec['playerid'] for rec in self.kodi.Player.GetActivePlayers()['result']]
+        for playerid in player_ids:
+            self.kodi.Player.SetSpeed(playerid=playerid, speed=16)
+
+    def _player_rewind(self, sock_stream):
+        player_ids = [rec['playerid'] for rec in self.kodi.Player.GetActivePlayers()['result']]
+        for playerid in player_ids:
+            self.kodi.Player.SetSpeed(playerid=playerid, speed=-16)
+
+
 def exit_script(signal, frame):
     sys.exit(0)
 
 if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print('Usage: kodi_interface.py <port#>')
+        sys.exit(1)
+    try:
+        port = int(sys.argv[1])
+        if port <= 0 or port > 65535:
+            raise ValueError()
+    except ValueError:
+        print('Invalid port number')
+        sys.exit(1)
     signal.signal(signal.SIGINT, exit_script)
     print('AMBr Python Interface')
     print('To exit, press ctrl+break (Fn+Ctrl+B)')
     print('Current Port: ' + str(sys.argv[1]))
     ki = KodiInterface('localhost', 'kodi', 'Password123', 8080)
     print("Connected to Kodi, starting socket")
-    svr_thread = threading.Thread(target=ki.start_socket)
+    svr_thread = threading.Thread(target=ki.start_socket, args=[port])
     svr_thread.run()
     svr_thread.join()
