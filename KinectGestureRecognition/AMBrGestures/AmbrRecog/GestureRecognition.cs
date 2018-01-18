@@ -130,16 +130,16 @@ namespace AMBrGestures
             _gesturesService = GesturesServiceEndpointFactory.Create();
             _gesturesService.StatusChanged += (oldStatus, newStatus) => GesturesDetectionStatusChanged?.Invoke(oldStatus, newStatus);
             await _gesturesService.ConnectAsync();
-            await _gesturesService.RegisterGesture(_pauseGesture);
-            await _gesturesService.RegisterGesture(_selectGesture);
-            await _gesturesService.RegisterGesture(_rewindGesture);
-            await _gesturesService.RegisterGesture(_forwardGesture);
-            await _gesturesService.RegisterGesture(_menuGesture);
-            await _gesturesService.RegisterGesture(_backGesture);
-            await _gesturesService.RegisterGesture(_downGesture);
-            await _gesturesService.RegisterGesture(_upGesture);
-            await _gesturesService.RegisterGesture(_leftGesture);
-            await _gesturesService.RegisterGesture(_rightGesture);
+            await _gesturesService.RegisterGesture(_pauseGesture, true);
+            await _gesturesService.RegisterGesture(_selectGesture, true);
+            await _gesturesService.RegisterGesture(_rewindGesture, true);
+            await _gesturesService.RegisterGesture(_forwardGesture, true);
+            await _gesturesService.RegisterGesture(_menuGesture, true);
+            await _gesturesService.RegisterGesture(_backGesture, true);
+            await _gesturesService.RegisterGesture(_downGesture, true);
+            await _gesturesService.RegisterGesture(_upGesture, true);
+            await _gesturesService.RegisterGesture(_leftGesture, true);
+            await _gesturesService.RegisterGesture(_rightGesture, true);
         }
 
         public void Dispose() => _gesturesService?.Dispose();
