@@ -39,7 +39,16 @@ namespace AMBrGestures
             ProcessStartInfo ps = new ProcessStartInfo("python", "AmbrKodi\\kodi_interface.py " + port.ToString());
             kodiPython.StartInfo = ps;
             kodiPython.Start();
-            kodiTcpClient = new TcpClient("127.0.0.1", port);
+
+            while (true)
+            {
+                try
+                {
+                    kodiTcpClient = new TcpClient("127.0.0.1", port);
+                    break;
+                }
+                catch { }
+            }
 
             kodiStreamWriter = new StreamWriter(kodiTcpClient.GetStream());
             kodiStreamWriter.AutoFlush = true;
