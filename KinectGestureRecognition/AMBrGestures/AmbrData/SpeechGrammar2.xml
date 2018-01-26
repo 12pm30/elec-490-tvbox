@@ -72,7 +72,7 @@
       <item>
         <tag>INPUT_DOWN</tag>
         <one-of>
-          <item> up </item>
+          <item> down </item>
           <item> go down </item>
           <item> scroll down </item>
         </one-of>
