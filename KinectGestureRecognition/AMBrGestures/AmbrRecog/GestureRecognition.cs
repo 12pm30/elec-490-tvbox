@@ -20,11 +20,14 @@ namespace AMBrGestures
         private Gesture _rewindGesture;
         private Gesture _forwardGesture;
         private Gesture _menuGesture;
+        private Gesture _contextGesture;
         private Gesture _backGesture;
         private Gesture _downGesture;
         private Gesture _upGesture;
         private Gesture _leftGesture;
         private Gesture _rightGesture;
+        private Gesture _volumeUpGesture;
+        private Gesture _volumeDownGesture;
 
         public event StatusChangedHandler GesturesDetectionStatusChanged;
         //public event GestureChangedHandler GestureChanged;
@@ -47,7 +50,13 @@ namespace AMBrGestures
                 new FingerPose (new AllFingersContext(new [] {Finger.Thumb, Finger.Pinky}), FingerFlexion.Folded)
                 );
             //menuPose.Triggered += (s, arg) => KinectActionRecognized?.Invoke(GestureType.Menu);
-            menuPose.Triggered += (s, arg) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureAction.INPUT_CONTEXTMENU));
+            menuPose.Triggered += (s, arg) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureAction.SCREEN_HOME));
+
+            var contextPose = new HandPose("contextPose", new PalmPose(new AnyHandContext(), PoseDirection.Backward, PoseDirection.Up),
+                new FingerPose(new AllFingersContext(new[] { Finger.Thumb, Finger.Pinky }), FingerFlexion.Open),
+                new FingerPose(new AllFingersContext(new[] { Finger.Middle, Finger.Index, Finger.Ring }), FingerFlexion.Folded));
+
+            contextPose.Triggered += (s, arg) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureAction.INPUT_CONTEXTMENU));
 
             var backPose = new HandPose("BackPose", new PalmPose(new AnyHandContext(), PoseDirection.Backward, PoseDirection.Left),
                 new FingerPose(new AllFingersContext(new[] { Finger.Index, Finger.Middle, Finger.Ring, Finger.Pinky }), FingerFlexion.Open, PoseDirection.Left));
@@ -55,16 +64,44 @@ namespace AMBrGestures
             backPose.Triggered += (s, arg) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureAction.INPUT_BACK));
 
             var leftPose = new HandPose("LeftPose", new PalmPose(new AnyHandContext(), PoseDirection.Backward, PoseDirection.Left),
-                new FingerPose(Finger.Index, FingerFlexion.OpenStretched, PoseDirection.Left),
-                new FingerPose(new AllFingersContext(new[] { Finger.Middle, Finger.Ring, Finger.Pinky }), PoseDirection.Right));
+                new FingerPose(new AllFingersContext(new[] { Finger.Index, Finger.Middle }), FingerFlexion.OpenStretched, PoseDirection.Left),
+                new FingerPose(new AllFingersContext(new[] { Finger.Ring, Finger.Pinky }), FingerFlexion.Folded));
 
             leftPose.Triggered += (s, arg) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureAction.INPUT_PREVIOUS));
 
+            var leftStopPose = new HandPose("LeftStopPose", new PalmPose(new AnyHandContext()),
+               new FingerPose(new AnyFingerContext(new[] { Finger.Index, Finger.Middle }), FingerFlexion.Folded));
+
             var rightPose = new HandPose("RightPose", new PalmPose(new AnyHandContext(), PoseDirection.Forward, PoseDirection.Right),
-               new FingerPose(Finger.Index, FingerFlexion.OpenStretched, PoseDirection.Right),
-               new FingerPose(new AllFingersContext(new[] { Finger.Middle, Finger.Ring, Finger.Pinky }), PoseDirection.Left));
+               new FingerPose(new AllFingersContext(new[] { Finger.Index, Finger.Middle }), FingerFlexion.OpenStretched, PoseDirection.Right),
+               new FingerPose(new AllFingersContext(new[] { Finger.Ring, Finger.Pinky }), FingerFlexion.Folded));
 
             rightPose.Triggered += (s, arg) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureAction.INPUT_NEXT));
+
+            var rightStopPose = new HandPose("RightStopPose", new PalmPose(new AnyHandContext()),
+               new FingerPose(new AnyFingerContext(new[] { Finger.Index, Finger.Middle }), FingerFlexion.Folded));
+
+            var volumeUpPose = new HandPose("VolumeUpPose", new PalmPose(new AnyHandContext(), PoseDirection.Backward, PoseDirection.Up),
+                new FingerPose(new AllFingersContext(new[] { Finger.Index, Finger.Middle }), FingerFlexion.Open, PoseDirection.Up),
+                new FingerPose(new AllFingersContext(new[] { Finger.Thumb, Finger.Ring, Finger.Pinky }), FingerFlexion.Folded));
+            volumeUpPose.Triggered += (s, args) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureAction.VOLUME_UP));
+
+            var volumeUpStop = new HandPose("VolumeUpStopPose", new PalmPose(new AnyHandContext()),
+               new FingerPose(new AnyFingerContext(new[] { Finger.Index, Finger.Middle }), FingerFlexion.Folded));
+
+            _volumeUpGesture = new Gesture("VolumeUpGesture", volumeUpPose, volumeUpStop);
+            _volumeUpGesture.IdleTriggered += (s, args) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureAction.VOLUME_DONE));
+
+            var volumeDownPose = new HandPose("VolumeDownPose", new PalmPose(new AnyHandContext(), PoseDirection.Backward, PoseDirection.Down),
+                new FingerPose(new AllFingersContext(new[] { Finger.Index, Finger.Middle }), FingerFlexion.Open, PoseDirection.Down),
+                new FingerPose(new AllFingersContext(new[] { Finger.Thumb, Finger.Ring, Finger.Pinky }), FingerFlexion.Folded));
+            volumeDownPose.Triggered += (s, args) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureAction.VOLUME_DOWN));
+
+            var volumeDownStop = new HandPose("VolumeDownStopPose", new PalmPose(new AnyHandContext()),
+               new FingerPose(new AnyFingerContext(new[] { Finger.Index, Finger.Middle }), FingerFlexion.Folded));
+
+            _volumeDownGesture = new Gesture("VolumeDownGesture", volumeDownPose, volumeDownStop);
+            _volumeDownGesture.IdleTriggered += (s, args) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureAction.VOLUME_DOWN));
 
             var pinchPoseRewind = GeneratePinchPose("PinchPoseRewind");
             var pinchPoseForward = GeneratePinchPose("PinchPoseForward");
@@ -122,9 +159,13 @@ namespace AMBrGestures
             _pauseGesture = new Gesture("PauseGesture", pausePose, GenerateSpacerPose("PauseSpacer"));
             _selectGesture = new Gesture("SelectGesture", selectPose, GenerateSpacerPose("SelectSpacer"));
             _menuGesture = new Gesture("MenuGesture", menuPose, GenerateSpacerPose("MenuSpacer"));
+            _contextGesture = new Gesture("ContextGesture", contextPose, GenerateSpacerPose("ContextSpacer"));
             _backGesture = new Gesture("BackGesture", backPose, GenerateSpacerPose("BackSpacer"));
-            _leftGesture = new Gesture("LeftGesture", leftPose, GenerateSpacerPose("LeftSpacer"));
-            _rightGesture = new Gesture("RightGesture", rightPose, GenerateSpacerPose("RightSpacer"));
+            _leftGesture = new Gesture("LeftGesture", leftPose, leftStopPose);
+            _rightGesture = new Gesture("RightGesture", rightPose, rightStopPose);
+
+            _leftGesture.IdleTriggered += (s, args) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureAction.INPUT_SCROLLDONE));
+            _rightGesture.IdleTriggered += (s, args) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureAction.INPUT_SCROLLDONE));
 
             // Step2: Connect to Gesture Service, route StatusChanged event to the UI and register the gesture
             _gesturesService = GesturesServiceEndpointFactory.Create();
@@ -135,11 +176,14 @@ namespace AMBrGestures
             await _gesturesService.RegisterGesture(_rewindGesture, true);
             await _gesturesService.RegisterGesture(_forwardGesture, true);
             await _gesturesService.RegisterGesture(_menuGesture, true);
+            await _gesturesService.RegisterGesture(_contextGesture, true);
             await _gesturesService.RegisterGesture(_backGesture, true);
             await _gesturesService.RegisterGesture(_downGesture, true);
             await _gesturesService.RegisterGesture(_upGesture, true);
             await _gesturesService.RegisterGesture(_leftGesture, true);
             await _gesturesService.RegisterGesture(_rightGesture, true);
+            await _gesturesService.RegisterGesture(_volumeDownGesture, true);
+            await _gesturesService.RegisterGesture(_volumeUpGesture, true);
         }
 
         public void Dispose() => _gesturesService?.Dispose();

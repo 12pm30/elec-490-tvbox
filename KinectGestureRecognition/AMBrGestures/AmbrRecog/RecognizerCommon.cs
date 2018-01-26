@@ -40,7 +40,10 @@ namespace AMBrGestures
         PLAYER_FORWARD,
         PLAYER_REWIND,
         PLAYER_SEEKDONE,
-        PLAYER_INFO
+        PLAYER_INFO,
+        VOLUME_UP,
+        VOLUME_DOWN,
+        VOLUME_DONE
     }
 
     public enum KinectActionRecognizedSource
