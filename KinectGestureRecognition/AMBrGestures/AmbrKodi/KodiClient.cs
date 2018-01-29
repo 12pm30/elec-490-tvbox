@@ -18,6 +18,8 @@ namespace AMBrGestures
         private StreamWriter kodiStreamWriter = null;
 
         private Timer scrollTimer = null;
+        private Timer volumeTimer = null;
+        private GestureAction? volumeDirection = null;
         private Boolean seekInProgress = false;
         private Boolean videoPaused = false;
 
@@ -41,20 +43,24 @@ namespace AMBrGestures
                 if (action == GestureAction.INPUT_UP || action == GestureAction.INPUT_DOWN)
                 {
                     // Ignore scroll actions while one is already in progress
-                    if (scrollTimer != null)
+                    if (scrollTimer == null)
                     {
+                        kodiStreamWriter.WriteLine(action.ToString());
                         scrollTimer = new Timer(1000);
                         scrollTimer.Elapsed += (sendr, ev) => kodiStreamWriter.WriteLine(action.ToString());
+                        scrollTimer.AutoReset = true;
                         scrollTimer.Start();
                     }
                 }
                 else if (action == GestureAction.INPUT_PREVIOUS || action == GestureAction.INPUT_NEXT)
                 {
                     // Ignore scroll actions while one is already in progress
-                    if (scrollTimer != null)
+                    if (scrollTimer == null)
                     {
+                        kodiStreamWriter.WriteLine(action.ToString());
                         scrollTimer = new Timer(1500);
                         scrollTimer.Elapsed += (sendr, ev) => kodiStreamWriter.WriteLine(action.ToString());
+                        scrollTimer.AutoReset = true;
                         scrollTimer.Start();
                     }
                 }
@@ -63,6 +69,31 @@ namespace AMBrGestures
                     scrollTimer?.Stop();
                     scrollTimer?.Dispose();
                     scrollTimer = null;
+                }
+                else if (action == GestureAction.VOLUME_DOWN || action == GestureAction.VOLUME_UP)
+                {
+                        if (volumeDirection != action)
+                        {
+                            if (volumeTimer != null)
+                            {
+                                volumeTimer?.Stop();
+                                volumeTimer?.Dispose();
+                                volumeTimer = null;
+                            }
+                            kodiStreamWriter.WriteLine(action.ToString());
+                            volumeTimer = new Timer(1000);
+                            volumeTimer.Elapsed += (sendr, ev) => kodiStreamWriter.WriteLine(action.ToString());
+                            volumeTimer.AutoReset = true;
+                            volumeTimer.Start();
+                            volumeDirection = action;
+                        }
+                }
+                else if (action == GestureAction.VOLUME_DONE)
+                {
+                    volumeTimer?.Stop();
+                    volumeTimer?.Dispose();
+                    volumeTimer = null;
+                    volumeDirection = null;
                 }
                 else if (action == GestureAction.PLAYER_REWIND || action == GestureAction.PLAYER_FORWARD)
                 {
@@ -75,13 +106,16 @@ namespace AMBrGestures
                 }
                 else if (action == GestureAction.PLAYER_SEEKDONE)
                 {
-                    if (videoPaused)
+                    if (seekInProgress)
                     {
-                        kodiStreamWriter.WriteLine(GestureAction.PLAYER_PAUSE.ToString());
-                    }
-                    else
-                    {
-                        kodiStreamWriter.WriteLine(GestureAction.PLAYER_PLAY.ToString());
+                        if (videoPaused)
+                        {
+                            kodiStreamWriter.WriteLine(GestureAction.PLAYER_PAUSE.ToString());
+                        }
+                        else
+                        {
+                            kodiStreamWriter.WriteLine(GestureAction.PLAYER_PLAY.ToString());
+                        }
                     }
                     seekInProgress = false;
                 }

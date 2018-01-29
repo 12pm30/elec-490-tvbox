@@ -34,8 +34,8 @@ class KodiInterface(object):
         sock_stream = clt_socket.makefile('r+')
         command_dict = { 'INPUT_UP' : self._input_up,
                          'INPUT_DOWN': self._input_down,
-                         'INPUT_RIGHT': self._input_right,
-                         'INPUT_LEFT': self._input_left,
+                         'INPUT_NEXT': self._input_right,
+                         'INPUT_PREVIOUS': self._input_left,
                          'INPUT_SELECT': self._input_select,
                          'INPUT_BACK': self._input_back,
                          'INPUT_HOME': self._input_home,
@@ -44,6 +44,8 @@ class KodiInterface(object):
                          'PLAYER_PAUSE': self._player_pause,
                          'PLAYER_STOP': self._player_stop,
                          'PLAYER_OPEN': self._player_open,
+                         'PLAYER_FORWARD' : self._player_forward,
+                         'PLAYER_REWIND' : self._player_rewind,
                          'GUI_NOTIFICATION': self._gui_notification
                        }
 
@@ -58,7 +60,9 @@ class KodiInterface(object):
                         try:
                             cmdEx = command_dict[command](sock_stream, *params)
 
-                            if u'error' in cmdEx.keys():
+                            if cmdEx is None:
+                                print('Command %s returned no result.' % (command))
+                            elif u'error' in cmdEx.keys():
                                 print(cmdEx['error']['data']['stack']['message'])
                                 raise KodiApiCommandFailureError(cmdEx['error']['data']['stack']['message'])
                             else:
@@ -68,6 +72,7 @@ class KodiInterface(object):
                             print ("Command Error: {} - {}".format(type(e).__name__,str(e)))
                     else:
                         sock_stream.write('Unrecognized command\n')
+                        print('Command: %s is not recognized\n' % (command))
                     sock_stream.flush()
 
         except:
