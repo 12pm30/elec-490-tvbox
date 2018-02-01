@@ -6,6 +6,7 @@ import socket
 import sys
 import threading
 import time
+import shlex
 
 class KodiApiCommandFailureError(Exception):
     pass
@@ -46,13 +47,15 @@ class KodiInterface(object):
                          'PLAYER_OPEN': self._player_open,
                          'PLAYER_FORWARD' : self._player_forward,
                          'PLAYER_REWIND' : self._player_rewind,
-                         'GUI_NOTIFICATION': self._gui_notification
+                         'GUI_NOTIFICATION': self._gui_notification,
+						 'APPLICATION_MUTE' : self._application_mute,
+						 'APPLICATION_UNMUTE' : self._application_unmute
                        }
 
         try:
             for line in sock_stream:
 
-                    split_line = line.strip().split(' ')
+                    split_line = shlex.split(line.strip())
                     command = split_line[0]
                     params = split_line[1:]
 
@@ -85,7 +88,7 @@ class KodiInterface(object):
         sys.exit()
 
     def _gui_notification(self, sock_stream, tit, msg, tim):
-        return self.kodi.GUI.ShowNotification(title=tit, message=msg, displaytime=tim)
+		return self.kodi.GUI.ShowNotification(title=tit, message=msg, displaytime=int(tim))
 
     def _input_up(self, sock_stream):
         return self.kodi.Input.Up()
@@ -107,6 +110,12 @@ class KodiInterface(object):
 
     def _input_home(self,sock_stream):
         return self.kodi.Input.Home()
+
+    def _application_mute(self,sock_stream):
+		return self.kodi.Application.SetMute(True)
+
+    def _application_unmute(self,sock_stream):
+		return self.kodi.Application.SetMute(False)
 
     def _list_movies(self, sock_stream):
         for movie in self.kodi.VideoLibrary.GetMovies()['result']['movies']:

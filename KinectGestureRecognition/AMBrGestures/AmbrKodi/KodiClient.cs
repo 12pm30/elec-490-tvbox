@@ -19,9 +19,12 @@ namespace AMBrGestures
 
         private Timer scrollTimer = null;
         private Timer volumeTimer = null;
+        private Timer speechTimer = null;
         private GestureAction? volumeDirection = null;
         private Boolean seekInProgress = false;
         private Boolean videoPaused = false;
+
+        private Boolean allowSpeechEvents = false;
 
         public KodiClient()
         {
@@ -145,7 +148,26 @@ namespace AMBrGestures
             }
             else
             {
-                kodiStreamWriter.WriteLine(action.ToString());
+                if (action == GestureAction.ACTIVATION_PHRASE)
+                {
+                    //Send a message to
+                    kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'AMBr' 'Say A Command' 10000");
+                    kodiStreamWriter.WriteLine("APPLICATION_MUTE");
+
+                    scrollTimer = new Timer(10000);
+                    scrollTimer.Elapsed += (sendr, ev) => allowSpeechEvents = false;
+                    scrollTimer.AutoReset = false;
+                    scrollTimer.Start();
+
+                    allowSpeechEvents = true;
+                }
+                else if (allowSpeechEvents)
+                {
+                    //Source is a speech event
+                    kodiStreamWriter.WriteLine(action.ToString());
+                    kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'AMBr' 'Say A Command' 1500");
+                    kodiStreamWriter.WriteLine("APPLICATION_UNMUTE");
+                }
             }
         }
 
