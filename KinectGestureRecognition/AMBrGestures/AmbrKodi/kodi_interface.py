@@ -48,8 +48,10 @@ class KodiInterface(object):
                          'PLAYER_FORWARD' : self._player_forward,
                          'PLAYER_REWIND' : self._player_rewind,
                          'GUI_NOTIFICATION': self._gui_notification,
-						 'APPLICATION_MUTE' : self._application_mute,
-						 'APPLICATION_UNMUTE' : self._application_unmute
+                         'APPLICATION_MUTE' : self._application_mute,
+                         'APPLICATION_UNMUTE' : self._application_unmute,
+                         'VOLUME_UP' : self._application_setvolume_up,
+                         'VOLUME_DOWN' : self._application_setvolume_down
                        }
 
         try:
@@ -112,10 +114,30 @@ class KodiInterface(object):
         return self.kodi.Input.Home()
 
     def _application_mute(self,sock_stream):
-		return self.kodi.Application.SetMute(True)
+        return self.kodi.Application.SetMute(True)
 
     def _application_unmute(self,sock_stream):
-		return self.kodi.Application.SetMute(False)
+        return self.kodi.Application.SetMute(False)
+    
+    def _application_setvolume_up(self, sock_stream):
+        currVol = self.kodi.Application.GetProperties(properties=['volume'])['result']['volume']
+        
+        newVol = currVol + 1
+        
+        if newVol > 100:
+            newVol = 100
+            
+        return self.kodi.Application.SetVolume(volume=newVol)
+    
+    def _application_setvolume_down(self, sock_stream):
+        currVol = self.kodi.Application.GetProperties(properties=['volume'])['result']['volume']
+        
+        newVol = currVol - 1
+        
+        if newVol < 0:
+            newVol = 0
+        
+        return self.kodi.Application.SetVolume(volume=newVol)
 
     def _list_movies(self, sock_stream):
         for movie in self.kodi.VideoLibrary.GetMovies()['result']['movies']:
