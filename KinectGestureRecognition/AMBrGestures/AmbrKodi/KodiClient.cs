@@ -134,7 +134,7 @@ namespace AMBrGestures
                     kodiStreamWriter.WriteLine(action.ToString());
                     videoPaused = true;
                 }
-                else if (action == GestureAction.SCREEN_HOME)
+                else if (action == GestureAction.INPUT_HOME)
                 {
                     // Stop any playing content and return to the home screen.
                     kodiStreamWriter.WriteLine(GestureAction.PLAYER_STOP.ToString());

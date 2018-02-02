@@ -24,7 +24,7 @@
       </item>
 
       <item>
-        <tag>SCREEN_HOME</tag>
+        <tag>INPUT_HOME</tag>
         <one-of>
           <item> home </item>
           <item> home screen</item>

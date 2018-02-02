@@ -50,7 +50,7 @@ namespace AMBrGestures
                 new FingerPose (new AllFingersContext(new [] {Finger.Thumb, Finger.Pinky}), FingerFlexion.Folded)
                 );
             //menuPose.Triggered += (s, arg) => KinectActionRecognized?.Invoke(GestureType.Menu);
-            menuPose.Triggered += (s, arg) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureAction.SCREEN_HOME));
+            menuPose.Triggered += (s, arg) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureAction.INPUT_HOME));
 
             var contextPose = new HandPose("contextPose", new PalmPose(new AnyHandContext(), PoseDirection.Backward, PoseDirection.Up),
                 new FingerPose(new AllFingersContext(new[] { Finger.Thumb, Finger.Pinky }), FingerFlexion.Open),
