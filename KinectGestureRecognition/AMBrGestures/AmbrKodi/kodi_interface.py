@@ -40,6 +40,8 @@ class KodiInterface(object):
                          'INPUT_SELECT': self._input_select,
                          'INPUT_BACK': self._input_back,
                          'INPUT_HOME': self._input_home,
+                         'INPUT_CONTEXTMENU' : self._input_contextmenu,
+                         'INPUT_INFO' : self._input_info,
                          'ls_movies': self._list_movies,
                          'PLAYER_PLAY': self._player_play,
                          'PLAYER_PAUSE': self._player_pause,
@@ -48,8 +50,13 @@ class KodiInterface(object):
                          'PLAYER_FORWARD' : self._player_forward,
                          'PLAYER_REWIND' : self._player_rewind,
                          'GUI_NOTIFICATION': self._gui_notification,
-						 'APPLICATION_MUTE' : self._application_mute,
-						 'APPLICATION_UNMUTE' : self._application_unmute
+                         'APPLICATION_MUTE' : self._application_mute,
+                         'APPLICATION_UNMUTE' : self._application_unmute,
+                         'VOLUME_UP' : self._application_setvolume_up,
+                         'VOLUME_DOWN' : self._application_setvolume_down,
+                         'SCREEN_PHOTOS' : self._screen_photos,
+                         'SCREEN_VIDEOS' : self._screen_videos,
+                         'SCREEN_MUSIC' : self._screen_music
                        }
 
         try:
@@ -110,12 +117,38 @@ class KodiInterface(object):
 
     def _input_home(self,sock_stream):
         return self.kodi.Input.Home()
-
+    
+    def _input_contextmenu(self, sock_stream):
+        return self.kodi.Input.ContextMenu()
+    
+    def _input_info(self, sock_stream):
+        return self.kodi.Input.Info()
+    
     def _application_mute(self,sock_stream):
-		return self.kodi.Application.SetMute(True)
+        return self.kodi.Application.SetMute(True)
 
     def _application_unmute(self,sock_stream):
-		return self.kodi.Application.SetMute(False)
+        return self.kodi.Application.SetMute(False)
+    
+    def _application_setvolume_up(self, sock_stream):
+        currVol = self.kodi.Application.GetProperties(properties=['volume'])['result']['volume']
+        
+        newVol = currVol + 1
+        
+        if newVol > 100:
+            newVol = 100
+            
+        return self.kodi.Application.SetVolume(volume=newVol)
+    
+    def _application_setvolume_down(self, sock_stream):
+        currVol = self.kodi.Application.GetProperties(properties=['volume'])['result']['volume']
+        
+        newVol = currVol - 1
+        
+        if newVol < 0:
+            newVol = 0
+        
+        return self.kodi.Application.SetVolume(volume=newVol)
 
     def _list_movies(self, sock_stream):
         for movie in self.kodi.VideoLibrary.GetMovies()['result']['movies']:
@@ -154,7 +187,15 @@ class KodiInterface(object):
         player_ids = [rec['playerid'] for rec in self.kodi.Player.GetActivePlayers()['result']]
         for playerid in player_ids:
             self.kodi.Player.SetSpeed(playerid=playerid, speed=-16)
-
+    
+    def _screen_photos(self, sock_stream):
+        return self.kodi.GUI.ActivateWindow(window='pictures',parameters=['Files'])
+    
+    def _screen_videos(self, sock_stream):
+        return self.kodi.GUI.ActivateWindow(window='videos',parameters=['MovieTitles'])
+    
+    def _screen_music(self, sock_stream):
+        return self.kodi.GUI.ActivateWindow(window='music',parameters=['Songs'])
 
 def exit_script(signal, frame):
     sys.exit(0)
