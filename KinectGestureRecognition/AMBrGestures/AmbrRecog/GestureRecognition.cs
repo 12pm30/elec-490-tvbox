@@ -101,7 +101,7 @@ namespace AMBrGestures
                new FingerPose(new AnyFingerContext(new[] { Finger.Index, Finger.Middle }), FingerFlexion.Folded));
 
             _volumeDownGesture = new Gesture("VolumeDownGesture", volumeDownPose, volumeDownStop);
-            _volumeDownGesture.IdleTriggered += (s, args) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureAction.VOLUME_DOWN));
+            _volumeDownGesture.IdleTriggered += (s, args) => KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Gesture, GestureAction.VOLUME_DONE));
 
             var pinchPoseRewind = GeneratePinchPose("PinchPoseRewind");
             var pinchPoseForward = GeneratePinchPose("PinchPoseForward");

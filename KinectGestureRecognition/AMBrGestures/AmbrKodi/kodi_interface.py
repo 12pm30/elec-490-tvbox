@@ -130,24 +130,26 @@ class KodiInterface(object):
     def _application_unmute(self,sock_stream):
         return self.kodi.Application.SetMute(False)
     
-    def _application_setvolume_up(self, sock_stream):
+    def _application_setvolume_up(self, sock_stream, amount=1):
         currVol = self.kodi.Application.GetProperties(properties=['volume'])['result']['volume']
         
-        newVol = currVol + 1
+        newVol = currVol + int(amount)
         
         if newVol > 100:
             newVol = 100
             
+        print(newVol)
         return self.kodi.Application.SetVolume(volume=newVol)
     
-    def _application_setvolume_down(self, sock_stream):
+    def _application_setvolume_down(self, sock_stream, amount=1):
         currVol = self.kodi.Application.GetProperties(properties=['volume'])['result']['volume']
         
-        newVol = currVol - 1
+        newVol = currVol - int(amount)
         
         if newVol < 0:
             newVol = 0
-        
+       
+        print(newVol)
         return self.kodi.Application.SetVolume(volume=newVol)
 
     def _list_movies(self, sock_stream):

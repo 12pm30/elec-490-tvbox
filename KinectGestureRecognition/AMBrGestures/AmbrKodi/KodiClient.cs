@@ -18,9 +18,14 @@ namespace AMBrGestures
         private StreamWriter kodiStreamWriter = null;
 
         private Timer scrollTimer = null;
+        private GestureAction? scrollAction = null;
+        private int scrollCount = 0;
+
         private Timer volumeTimer = null;
+        private GestureAction? volumeAction = null;
+
         private Timer speechTimer = null;
-        private GestureAction? volumeDirection = null;
+
         private Boolean seekInProgress = false;
         private Boolean videoPaused = false;
 
@@ -36,67 +41,74 @@ namespace AMBrGestures
             kodiPython.Exited += clientKilledEventHandler;
 
             startKodiClientProcess();
+
+            //Set up the timer objects
+            scrollTimer = new Timer(1000); //1 sec delay
+            scrollTimer.AutoReset = true; //Will keep firing until stopped
+            scrollTimer.Enabled = false;
+            scrollTimer.Elapsed += scrollTimerEventHandler;
+
+            volumeTimer = new Timer(500);
+            volumeTimer.AutoReset = true;
+            volumeTimer.Enabled = false;
+            volumeTimer.Elapsed += volumeTimerEventHandler;
+
+            speechTimer = new Timer(10000);
+            speechTimer.AutoReset = false;
+            speechTimer.Enabled = false;
+            speechTimer.Elapsed += speechTimerEventHandler;
+
         }
 
         public void KinectActionEventHandler(object sender, KinectRecognizedActionEventArgs e)
         {
             GestureAction action = e.ActionType;
             KinectActionRecognizedSource source = e.ActionSource;
-            if (source == KinectActionRecognizedSource.Gesture){
+             if (source == KinectActionRecognizedSource.Gesture){
                 if (action == GestureAction.INPUT_UP || action == GestureAction.INPUT_DOWN)
                 {
                     // Ignore scroll actions while one is already in progress
-                    if (scrollTimer == null)
+                    if (scrollTimer.Enabled == false)
                     {
-                        kodiStreamWriter.WriteLine(action.ToString());
-                        scrollTimer = new Timer(1000);
-                        scrollTimer.Elapsed += (sendr, ev) => kodiStreamWriter.WriteLine(action.ToString());
-                        scrollTimer.AutoReset = true;
-                        scrollTimer.Start();
+                        kodiStreamWriter.WriteLine(action.ToString()); 
+                        scrollAction = action; //Set the scroll action we want to do
+                        scrollTimer.Interval = 1000; //Set the interval
+                        scrollTimer.Start(); //Start the timer
                     }
                 }
                 else if (action == GestureAction.INPUT_PREVIOUS || action == GestureAction.INPUT_NEXT)
                 {
                     // Ignore scroll actions while one is already in progress
-                    if (scrollTimer == null)
+                    if (scrollTimer.Enabled == false)
                     {
                         kodiStreamWriter.WriteLine(action.ToString());
-                        scrollTimer = new Timer(1500);
-                        scrollTimer.Elapsed += (sendr, ev) => kodiStreamWriter.WriteLine(action.ToString());
-                        scrollTimer.AutoReset = true;
-                        scrollTimer.Start();
+                        scrollAction = action; //Set the scroll action we want to do
+                        scrollTimer.Interval = 1000; //TODO: Tune the scroll time.
+                        scrollTimer.Start(); //Start the timer
                     }
                 }
                 else if (action == GestureAction.INPUT_SCROLLDONE)
                 {
-                    scrollTimer?.Stop();
-                    scrollTimer?.Dispose();
-                    scrollTimer = null;
+                    scrollTimer.Enabled = false; //Stop the scroll timer, set the action to null
+                    scrollAction = null;
+                    scrollCount = 0;
                 }
                 else if (action == GestureAction.VOLUME_DOWN || action == GestureAction.VOLUME_UP)
                 {
-                        if (volumeDirection != action)
-                        {
-                            if (volumeTimer != null)
-                            {
-                                volumeTimer?.Stop();
-                                volumeTimer?.Dispose();
-                                volumeTimer = null;
-                            }
-                            kodiStreamWriter.WriteLine(action.ToString());
-                            volumeTimer = new Timer(1000);
-                            volumeTimer.Elapsed += (sendr, ev) => kodiStreamWriter.WriteLine(action.ToString());
-                            volumeTimer.AutoReset = true;
-                            volumeTimer.Start();
-                            volumeDirection = action;
-                        }
+                    //Set the volume action
+                    volumeAction = action;
+
+                    // Ignore volume actions while one is already in progress
+                    if (scrollTimer.Enabled == false)
+                    {
+                        kodiStreamWriter.WriteLine(action.ToString() + " 5");
+                        volumeTimer.Start(); //Start the timer
+                    }
                 }
                 else if (action == GestureAction.VOLUME_DONE)
                 {
-                    volumeTimer?.Stop();
-                    volumeTimer?.Dispose();
-                    volumeTimer = null;
-                    volumeDirection = null;
+                    volumeAction = null;
+                    volumeTimer.Enabled = false;
                 }
                 else if (action == GestureAction.PLAYER_REWIND || action == GestureAction.PLAYER_FORWARD)
                 {
@@ -140,7 +152,6 @@ namespace AMBrGestures
                     kodiStreamWriter.WriteLine(GestureAction.PLAYER_STOP.ToString());
                     kodiStreamWriter.WriteLine(action.ToString());
                 }
-
                 else
                 {
                     kodiStreamWriter.WriteLine(action.ToString());
@@ -154,19 +165,35 @@ namespace AMBrGestures
                     kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'AMBr' 'Say A Command' 10000");
                     kodiStreamWriter.WriteLine("APPLICATION_MUTE");
 
-                    scrollTimer = new Timer(10000);
-                    scrollTimer.Elapsed += (sendr, ev) => allowSpeechEvents = false;
-                    scrollTimer.AutoReset = false;
-                    scrollTimer.Start();
+                    speechTimer.Stop();
+                    speechTimer.Interval = 10000;
+                    speechTimer.Start();
 
                     allowSpeechEvents = true;
                 }
                 else if (allowSpeechEvents)
                 {
                     //Source is a speech event
-                    kodiStreamWriter.WriteLine(action.ToString());
-                    kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'AMBr' 'Say A Command' 1500");
-                    kodiStreamWriter.WriteLine("APPLICATION_UNMUTE");
+                   
+                    kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'AMBr' 'Say A Command' 2500");
+
+                    speechTimer.Stop();
+                    speechTimer.Interval = 2500;
+                    speechTimer.Start();
+
+                    if(action == GestureAction.VOLUME_UP)
+                    {
+                        kodiStreamWriter.WriteLine("VOLUME_UP 10");
+                    }
+                    else if(action == GestureAction.VOLUME_DOWN)
+                    {
+                        kodiStreamWriter.WriteLine("VOLUME_DOWN 10");
+                    }
+                    else
+                    {
+                        kodiStreamWriter.WriteLine(action.ToString());
+                    }
+
                 }
             }
         }
@@ -196,6 +223,48 @@ namespace AMBrGestures
         {
             //If for whatever reason the kodi client dies, start it again
             startKodiClientProcess();
+        }
+
+        private void scrollTimerEventHandler(object sender, ElapsedEventArgs e)
+        {
+            if(scrollAction == GestureAction.INPUT_DOWN || scrollAction == GestureAction.INPUT_UP)
+            {
+                scrollCount += 1;
+
+                if (scrollCount == 5)
+                {
+                    //at 5 items, increase the scrolling speed a bit
+                    scrollTimer.Interval = 500;
+                }
+                else if(scrollCount == 25)
+                {
+                    //at 25 items, increase it some more
+                    scrollTimer.Interval = 250;
+                }
+
+                kodiStreamWriter.WriteLine(scrollAction.ToString());
+            }
+            else if(scrollAction != null)
+            {
+                kodiStreamWriter.WriteLine(scrollAction.ToString());
+            }
+            else
+            {
+                //If the setup is correct
+                Console.WriteLine("Scroll timer is firing, but the scroll action is null.");
+            }
+        }
+
+        private void volumeTimerEventHandler(object sender, ElapsedEventArgs e)
+        {
+            kodiStreamWriter.WriteLine(volumeAction.ToString() + " 5");
+        }
+
+        private void speechTimerEventHandler(object sender, ElapsedEventArgs e)
+        {
+            allowSpeechEvents = false;
+            //speechTimer.Enabled = false;
+            kodiStreamWriter.WriteLine("APPLICATION_UNMUTE");
         }
 
         static int FreeTcpPort()
