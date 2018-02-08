@@ -38,6 +38,7 @@
           <item> photos </item>
           <item> show photos </item>
           <item> play photos </item>
+          <item> open photos </item>
         </one-of>
       </item>
 
@@ -47,6 +48,7 @@
           <item> videos </item>
           <item> show videos </item>
           <item> play videos </item>
+          <item> open videos </item>
         </one-of>
       </item>
 
@@ -58,6 +60,7 @@
           <item> listen to music </item>
           <item> listen music </item>
           <item> play music </item>
+          <item> open music </item>
         </one-of>
       </item>
 
@@ -69,6 +72,7 @@
           <item> scroll up </item>
         </one-of>
       </item>
+      
       <item>
         <tag>INPUT_DOWN</tag>
         <one-of>
@@ -77,13 +81,14 @@
           <item> scroll down </item>
         </one-of>
       </item>
+      
       <item>
         <tag>INPUT_PREVIOUS</tag>
         <one-of>
           <item> previous </item>
-          <item> back </item>
-          <item> go back </item>
-          <item> scroll back </item>
+          <item> left </item>
+          <item> go left </item>
+          <item> scroll left </item>
         </one-of>
       </item>
 
@@ -91,9 +96,18 @@
         <tag>INPUT_NEXT</tag>
         <one-of>
           <item> next </item>
-          <item> forward </item>
-          <item> go forward </item>
-          <item> scroll forward </item>
+          <item> right </item>
+          <item> scroll right </item>
+          <item> go right </item>
+        </one-of>
+      </item>
+
+      <item>
+        <tag>INPUT_BACK</tag>
+        <one-of>
+          <item> back </item>
+          <item> go back </item>
+          <item> scroll back </item>
         </one-of>
       </item>
 
@@ -156,7 +170,21 @@
          </one-of>
       </item>
 
+      <item>
+        <tag>VOLUME_UP</tag>
+        <one-of>
+          <item> volume up </item>
+          <item> increase volume </item>
+        </one-of>
+      </item>
 
+      <item>
+        <tag>VOLUME_DOWN</tag>
+        <one-of>
+          <item> volume down </item>
+          <item> decrease volume </item>
+        </one-of>
+      </item>
 
     </one-of>
   </rule>
