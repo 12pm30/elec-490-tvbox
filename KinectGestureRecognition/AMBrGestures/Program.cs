@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Gestures;
 using Microsoft.Gestures.Endpoint;
+using Microsoft.Speech.Synthesis;
 
 namespace AMBrGestures
 {

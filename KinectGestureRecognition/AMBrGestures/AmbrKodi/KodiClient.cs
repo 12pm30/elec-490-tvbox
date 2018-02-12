@@ -10,6 +10,7 @@ using System.IO;
 using System.Timers;
 using System.Collections;
 using System.Xml;
+using Microsoft.Speech.Synthesis;
 
 namespace AMBrGestures
 {
@@ -20,6 +21,8 @@ namespace AMBrGestures
         private StreamReader kodiStreamReader = null;
         private StreamWriter kodiStreamWriter = null;
 
+        private SpeechSynthesizer ss;
+
         private Timer scrollTimer = null;
         private GestureAction? scrollAction = null;
         private int scrollCount = 0;
@@ -28,6 +31,9 @@ namespace AMBrGestures
         private GestureAction? volumeAction = null;
 
         private Timer speechTimer = null;
+
+        private Timer ttsTimer = null;
+        private string ttsPhrase = "";
 
         private Boolean seekInProgress = false;
         private Boolean videoPaused = false;
@@ -44,6 +50,13 @@ namespace AMBrGestures
         public KodiClient()
         {
             Console.WriteLine("KodiClient constructed");
+
+            ss = new SpeechSynthesizer();
+            ss.SetOutputToDefaultAudioDevice();
+
+            ttsTimer = new Timer(500);
+            ttsTimer.Elapsed += ttsTimerEventHandler;
+            ttsTimer.AutoReset = false;
 
             kodiPython = new Process();
             
@@ -176,8 +189,7 @@ namespace AMBrGestures
                 {
                     //Send a message to
                     //kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'AMBr' 'Say A Command' 10000");
-                    showNotification("AMBr", "Say A Command", 10000);
-
+                    showNotification("Say a Command", "AMBr", 10000, true);
                     kodiStreamWriter.WriteLine("APPLICATION_MUTE");
 
                     speechTimer.Stop();
@@ -224,7 +236,7 @@ namespace AMBrGestures
                         // Do something to get the user's selection...
                         //kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'Say a movie name' 'There are " + movies.Count.ToString() + " movies.' 10000");
                         playerIdType = "movieid";
-                        showNotification("Say a movie name", "There are " + movies.Count.ToString() + " movies.", 10000);
+                        showNotification("Say a movie title", "There are " + movies.Count.ToString() + " movies.", 10000, true);
 
                         speechTimer.Stop();
                         speechTimer.Interval = 10000;
@@ -248,7 +260,7 @@ namespace AMBrGestures
                         // Do something to get the user's selection...
                         //kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'Say a movie name' 'There are " + movies.Count.ToString() + " movies.' 10000");
                         playerIdType = "songid";
-                        showNotification("Say a song name", "There are " + songs.Count.ToString() + " songs.", 10000);
+                        showNotification("Say a song name", "There are " + songs.Count.ToString() + " songs.", 10000, true);
 
                         speechTimer.Stop();
                         speechTimer.Interval = 10000;
@@ -351,11 +363,21 @@ namespace AMBrGestures
             }
         }
 
-        private void showNotification(string title, string subtitle, int time)
+        private void ttsTimerEventHandler(object sender, ElapsedEventArgs e)
+        {
+            ss.Speak(notificationTitle);
+        }
+
+        private void showNotification(string title, string subtitle, int time, bool speak=false)
         {
             notificationTitle = title;
             notificationSubtitle = subtitle;
             kodiStreamWriter.WriteLine("GUI_NOTIFICATION '" + notificationTitle + "' '" + notificationSubtitle + "' " + time.ToString());
+
+            if (speak)
+            {
+                ttsTimer.Start();
+            }
         }
         private XmlDocument kodiListToXmlDocument(List<string> listItems)
         {
