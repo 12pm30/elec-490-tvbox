@@ -35,6 +35,8 @@ namespace AMBrGestures
         private Boolean allowSpeechEvents = false;
 
         private AmbrSpeechRecognition asr = null;
+        private string playerIdType = "";
+
 
         private string notificationTitle = "";
         private string notificationSubtitle = "";
@@ -221,7 +223,32 @@ namespace AMBrGestures
 
                         // Do something to get the user's selection...
                         //kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'Say a movie name' 'There are " + movies.Count.ToString() + " movies.' 10000");
+                        playerIdType = "movieid";
                         showNotification("Say a movie name", "There are " + movies.Count.ToString() + " movies.", 10000);
+
+                        speechTimer.Stop();
+                        speechTimer.Interval = 10000;
+                        speechTimer.Start();
+                    }
+                    else if (action == GestureAction.PLAY_MUSIC)
+                    {
+
+                        kodiStreamReader.DiscardBufferedData();
+                        kodiStreamWriter.WriteLine("LS_MUSIC");
+                        List<string> songs = new List<string>();
+                        string currLine = kodiStreamReader.ReadLine();
+                        while (!"DONE".Equals(currLine))
+                        {
+                            songs.Add(currLine);
+                            currLine = kodiStreamReader.ReadLine();
+                        }
+
+                        asr.RecognizeItemList(kodiListToXmlDocument(songs));
+
+                        // Do something to get the user's selection...
+                        //kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'Say a movie name' 'There are " + movies.Count.ToString() + " movies.' 10000");
+                        playerIdType = "songid";
+                        showNotification("Say a song name", "There are " + songs.Count.ToString() + " songs.", 10000);
 
                         speechTimer.Stop();
                         speechTimer.Interval = 10000;
@@ -230,7 +257,7 @@ namespace AMBrGestures
                     else if(action == GestureAction.PLAYER_OPEN)
                     {
                         //Console.WriteLine(e.ActionData)
-                        kodiStreamWriter.WriteLine("PLAYER_OPEN " + e.ActionData);
+                        kodiStreamWriter.WriteLine("PLAYER_OPEN " + playerIdType + " "  + e.ActionData);
                         asr.RecognizeItemList(null);
                     }
                     else if(action == GestureAction.PLAYER_OPEN_ERROR)

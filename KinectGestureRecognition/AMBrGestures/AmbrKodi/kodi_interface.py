@@ -43,6 +43,7 @@ class KodiInterface(object):
                          'INPUT_CONTEXTMENU' : self._input_contextmenu,
                          'INPUT_INFO' : self._input_info,
                          'LS_MOVIES': self._list_movies,
+                         'LS_MUSIC': self._list_music,
                          'PLAYER_PLAY': self._player_play,
                          'PLAYER_PAUSE': self._player_pause,
                          'PLAYER_STOP': self._player_stop,
@@ -156,13 +157,18 @@ class KodiInterface(object):
             sock_stream.write(str(movie['movieid']) + ":" + str(movie['label']) + '\n')
         sock_stream.write('DONE\n')
 
-    def _player_open(self, sock_stream, content_id):
+    def _list_music(self, sock_stream):
+        for song in self.kodi.AudioLibrary.GetSongs()['result']['songs']:
+            sock_stream.write(str(song['songid']) + ":" + str(song['label']) + '\n')
+        sock_stream.write('DONE\n')
+
+    def _player_open(self, sock_stream, idtype, content_id):
         try:
             content_id = int(content_id)
         except ValueError:
             sock_stream.write('Content ID must be an integer\n')
 
-        return self.kodi.Player.Open(item={'movieid':content_id})
+        return self.kodi.Player.Open(item={idtype:content_id})
 
     def _player_play(self, sock_stream):
         player_ids = [rec['playerid'] for rec in self.kodi.Player.GetActivePlayers()['result']]
