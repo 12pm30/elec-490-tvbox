@@ -34,6 +34,11 @@ namespace AMBrGestures
 
         private Boolean allowSpeechEvents = false;
 
+        private AmbrSpeechRecognition asr = null;
+
+        private string notificationTitle = "";
+        private string notificationSubtitle = "";
+
         public KodiClient()
         {
             Console.WriteLine("KodiClient constructed");
@@ -162,10 +167,15 @@ namespace AMBrGestures
             }
             else
             {
+                //the sender should be an AmbrSpeechRecognition object... capture a reference to it for later
+                asr = (AmbrSpeechRecognition)sender;
+
                 if (action == GestureAction.ACTIVATION_PHRASE)
                 {
                     //Send a message to
-                    kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'AMBr' 'Say A Command' 10000");
+                    //kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'AMBr' 'Say A Command' 10000");
+                    showNotification("AMBr", "Say A Command", 10000);
+
                     kodiStreamWriter.WriteLine("APPLICATION_MUTE");
 
                     speechTimer.Stop();
@@ -178,7 +188,8 @@ namespace AMBrGestures
                 {
                     //Source is a speech event
                    
-                    kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'AMBr' 'Say A Command' 2500");
+                    //kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'AMBr' 'Say A Command' 2500");
+                    showNotification(notificationTitle, notificationSubtitle, 2500);
 
                     speechTimer.Stop();
                     speechTimer.Interval = 2500;
@@ -197,7 +208,7 @@ namespace AMBrGestures
                     {
 
                         kodiStreamReader.DiscardBufferedData();
-                        kodiStreamWriter.WriteLine("ls_movies");
+                        kodiStreamWriter.WriteLine("LS_MOVIES");
                         List<string> movies = new List<string>();
                         string currLine = kodiStreamReader.ReadLine();
                         while (!"DONE".Equals(currLine))
@@ -206,46 +217,27 @@ namespace AMBrGestures
                             currLine = kodiStreamReader.ReadLine();
                         }
 
-                        XmlDocument doc = new XmlDocument();
-                        XmlElement grammar = (XmlElement)doc.AppendChild(doc.CreateElement("grammar"));
-                        grammar.SetAttribute("version", "1.0");
-                        grammar.SetAttribute("xml:lang", "en-US");
-                        grammar.SetAttribute("root", "rootRule");
-                        grammar.SetAttribute("tag-format", "semantics/1.0-literals");
-                        grammar.SetAttribute("xmlns", "http://www.w3.org/2001/06/grammar");
-                        XmlElement rule = (XmlElement)grammar.AppendChild(doc.CreateElement("rule"));
-                        rule.SetAttribute("id", "rootRule");
-                        XmlElement topLevelOneOf = (XmlElement)rule.AppendChild(doc.CreateElement("one-of"));
-                        foreach (string movie in movies)
-                        {
-                            string[] movieParts = movie.Split(':');
-                            string movieId = movieParts[0];
-                            string movieName = string.Join(":", movieParts.Skip(1));
-
-                            // Maybe remove/convert punctuation here?
-
-                            XmlElement outerItem = (XmlElement)topLevelOneOf.AppendChild(doc.CreateElement("item"));
-                            XmlElement tag = (XmlElement)outerItem.AppendChild(doc.CreateElement("tag"));
-                            tag.InnerText = movieId;
-                            XmlElement innerOneOf = (XmlElement)outerItem.AppendChild(doc.CreateElement("one-of"));
-                            XmlElement innerItem = (XmlElement)innerOneOf.AppendChild(doc.CreateElement("item"));
-                            innerItem.InnerText = movieName;
-                        }
-
-                        // This gives a nice human-readable formatted version of the XML
-                        StringWriter temp = new StringWriter();
-                        doc.Save(temp);
-                        Console.WriteLine(temp.ToString());
+                        asr.RecognizeItemList(kodiListToXmlDocument(movies));
 
                         // Do something to get the user's selection...
-                        kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'AMBr' 'Say A Movie Name' 10000");
+                        //kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'Say a movie name' 'There are " + movies.Count.ToString() + " movies.' 10000");
+                        showNotification("Say a movie name", "There are " + movies.Count.ToString() + " movies.", 10000);
+
                         speechTimer.Stop();
                         speechTimer.Interval = 10000;
                         speechTimer.Start();
-
-                        string userSelection = "4";
-                        kodiStreamWriter.WriteLine("PLAYER_OPEN " + userSelection);
-                        
+                    }
+                    else if(action == GestureAction.PLAYER_OPEN)
+                    {
+                        //Console.WriteLine(e.ActionData)
+                        kodiStreamWriter.WriteLine("PLAYER_OPEN " + e.ActionData);
+                        asr.RecognizeItemList(null);
+                    }
+                    else if(action == GestureAction.PLAYER_OPEN_ERROR)
+                    {
+                        //TODO See if we really need this...
+                        showNotification("Error", "Media Item Not Found", 10000);
+                        asr.RecognizeItemList(null);
                     }
                     else
                     {
@@ -323,6 +315,90 @@ namespace AMBrGestures
             allowSpeechEvents = false;
             //speechTimer.Enabled = false;
             kodiStreamWriter.WriteLine("APPLICATION_UNMUTE");
+
+            //hmmmmmmm
+            if(asr != null)
+            {
+                //Reset the speech recognizer's grammar to the default
+                asr.RecognizeItemList(null);
+            }
+        }
+
+        private void showNotification(string title, string subtitle, int time)
+        {
+            notificationTitle = title;
+            notificationSubtitle = subtitle;
+            kodiStreamWriter.WriteLine("GUI_NOTIFICATION '" + notificationTitle + "' '" + notificationSubtitle + "' " + time.ToString());
+        }
+        private XmlDocument kodiListToXmlDocument(List<string> listItems)
+        {
+            XmlDocument doc = new XmlDocument();
+            XmlElement grammar = (XmlElement)doc.AppendChild(doc.CreateElement("grammar"));
+            grammar.SetAttribute("version", "1.0");
+            grammar.SetAttribute("xml:lang", "en-US");
+            grammar.SetAttribute("root", "rootRule");
+            grammar.SetAttribute("tag-format", "semantics/1.0-literals");
+            grammar.SetAttribute("xmlns", "http://www.w3.org/2001/06/grammar");
+            XmlElement rule = (XmlElement)grammar.AppendChild(doc.CreateElement("rule"));
+            rule.SetAttribute("id", "rootRule");
+            XmlElement topLevelOneOf = (XmlElement)rule.AppendChild(doc.CreateElement("one-of"));
+
+            foreach (string movie in listItems)
+            {
+                string[] movieParts = movie.Split(':');
+                string movieId = movieParts[0];
+                string movieName = stripMediaTitles( string.Join(":", movieParts.Skip(1)), true);
+
+                // Maybe remove/convert punctuation here?
+
+                XmlElement outerItem = (XmlElement)topLevelOneOf.AppendChild(doc.CreateElement("item"));
+                XmlElement tag = (XmlElement)outerItem.AppendChild(doc.CreateElement("tag"));
+                tag.InnerText = movieId;
+                XmlElement innerOneOf = (XmlElement)outerItem.AppendChild(doc.CreateElement("one-of"));
+                XmlElement innerItem = (XmlElement)innerOneOf.AppendChild(doc.CreateElement("item"));
+                innerItem.InnerText = movieName;
+            }
+
+            return doc;
+        }
+
+        private string stripMediaTitles(string rawTitle, bool replaceDigits)
+        {
+            StringBuilder s = new StringBuilder(rawTitle);
+            StringBuilder sb2 = new StringBuilder();
+
+            s.Replace("&", " and ");
+            s.Replace("%", " percent ");
+            s.Replace("#", " number ");
+            s.Replace("@", " at ");
+
+            if (replaceDigits)
+            {
+                s.Replace("0", " zero ");
+                s.Replace("1", " one ");
+                s.Replace("2", " two ");
+                s.Replace("3", " three ");
+                s.Replace("4", " four ");
+                s.Replace("5", " five ");
+                s.Replace("6", " six ");
+                s.Replace("7", " seven ");
+                s.Replace("8", " eight ");
+                s.Replace("9", " nine ");
+            }
+
+            foreach (char c in s.ToString())
+            {
+                if (char.IsPunctuation(c))
+                {
+                    sb2.Append(" ");
+                }
+                else
+                {
+                    sb2.Append(c);
+                }
+            }
+
+            return s.ToString();
         }
 
         static int FreeTcpPort()

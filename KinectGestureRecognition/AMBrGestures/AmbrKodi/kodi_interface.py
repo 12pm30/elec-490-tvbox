@@ -42,7 +42,7 @@ class KodiInterface(object):
                          'INPUT_HOME': self._input_home,
                          'INPUT_CONTEXTMENU' : self._input_contextmenu,
                          'INPUT_INFO' : self._input_info,
-                         'ls_movies': self._list_movies,
+                         'LS_MOVIES': self._list_movies,
                          'PLAYER_PLAY': self._player_play,
                          'PLAYER_PAUSE': self._player_pause,
                          'PLAYER_STOP': self._player_stop,
@@ -54,7 +54,6 @@ class KodiInterface(object):
                          'APPLICATION_UNMUTE' : self._application_unmute,
                          'VOLUME_UP' : self._application_setvolume_up,
                          'VOLUME_DOWN' : self._application_setvolume_down,
-                         'SCREEN_PHOTOS' : self._screen_photos,
                          'SCREEN_VIDEOS' : self._screen_videos,
                          'SCREEN_MUSIC' : self._screen_music
                        }
@@ -190,8 +189,8 @@ class KodiInterface(object):
         for playerid in player_ids:
             self.kodi.Player.SetSpeed(playerid=playerid, speed=-16)
     
-    def _screen_photos(self, sock_stream):
-        return self.kodi.GUI.ActivateWindow(window='pictures',parameters=['Files'])
+#    def _screen_photos(self, sock_stream):
+#        return self.kodi.GUI.ActivateWindow(window='pictures',parameters=['Files'])
     
     def _screen_videos(self, sock_stream):
         return self.kodi.GUI.ActivateWindow(window='videos',parameters=['MovieTitles'])

@@ -8,16 +8,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Xml;
 
 namespace AMBrGestures
 {
     class AmbrSpeechRecognition : IKinectActionRecognizer
     {
         private SpeechRecognitionEngine ambrRecognitionEngine = null;
-        //private RecognizerInfo ambrRecognizerInfo = null;
         private util.KinectAudioStream ambrAudioStream = null;
-
         private KinectSensor ambrSensor = null;
+        private Grammar speechGrammar;
+
+        private bool recognizeItemList = false;
 
         public event KinectActionEventHandler KinectActionRecognized;
 
@@ -25,7 +27,7 @@ namespace AMBrGestures
         {
             //Set up the kinect sensor. Recognition engine setup is handled when the sensor is available or unavailable
             this.ambrSensor = KinectSensor.GetDefault();
-            
+
             this.ambrSensor.Open();
 
             //Get a copy of the audio stream that is compatible with the speech engine
@@ -34,14 +36,12 @@ namespace AMBrGestures
             //Initialize the recognition engine
             ambrRecognitionEngine = new SpeechRecognitionEngine(GetKinectRecognizer());
 
-            //Install the speech grammar
-            using (var memoryStream = new MemoryStream(Encoding.ASCII.GetBytes(File.ReadAllText("AmbrData\\SpeechGrammar2.xml"))))
-            {
-                var g = new Grammar(memoryStream);
-                ambrRecognitionEngine.LoadGrammar(g);
-            }
+            //Install the default speech grammar
+            InstallDefaultSpeechGrammar();
 
             ambrRecognitionEngine.SpeechRecognized += SpeechRecognized;
+            ambrRecognitionEngine.SpeechRecognitionRejected += SpeechRejected;
+            ambrRecognitionEngine.RecognizerUpdateReached += SpeechGrammarChange;
 
             ambrAudioStream.SpeechActive = true;
 
@@ -52,6 +52,50 @@ namespace AMBrGestures
 
         }
 
+        public void RecognizeItemList(XmlDocument doc)
+        {
+            ambrRecognitionEngine.RequestRecognizerUpdate(doc);
+        }
+
+        private void InstallDefaultSpeechGrammar()
+        {
+            //Install the speech grammar
+            using (var memoryStream = new MemoryStream(Encoding.ASCII.GetBytes(File.ReadAllText("AmbrData\\SpeechGrammar2.xml"))))
+            {
+                speechGrammar = new Grammar(memoryStream);
+                ambrRecognitionEngine.LoadGrammar(speechGrammar);
+            }
+        }
+
+        private void SpeechGrammarChange(object sender, RecognizerUpdateReachedEventArgs e)
+        {
+            ambrRecognitionEngine.UnloadAllGrammars();
+
+            if (e.UserToken == null)
+            {
+                //reset to the old grammar
+                recognizeItemList = false;
+                InstallDefaultSpeechGrammar();
+            }
+            else if(e.UserToken.GetType() == typeof(XmlDocument))
+            {
+                //We theoretically have a grammar we can use...
+                recognizeItemList = true;
+
+                var memoryStream = new MemoryStream();
+                ((XmlDocument)e.UserToken).Save(memoryStream);
+
+                memoryStream.Position = 0;//reset the stream position to 0
+                speechGrammar = new Grammar(memoryStream);
+                ambrRecognitionEngine.LoadGrammar(speechGrammar); 
+            }
+            else
+            {
+                //something is wrong here...
+                throw new ArgumentException("User token was not null or XML");
+            }
+        }
+
         private void SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             // Speech utterance confidence below which we treat speech as if it hadn't been heard
@@ -59,7 +103,22 @@ namespace AMBrGestures
 
             if(e.Result.Confidence > ConfidenceThreshold)
             {
-                KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Speech, (GestureAction)Enum.Parse(typeof(GestureAction), e.Result.Semantics.Value.ToString())));
+                if(recognizeItemList)
+                {
+                    KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Speech, GestureAction.PLAYER_OPEN, e.Result.Semantics.Value.ToString()));
+                }
+                else
+                {
+                    KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Speech, (GestureAction)Enum.Parse(typeof(GestureAction), e.Result.Semantics.Value.ToString())));
+                }
+            }
+        }
+
+        private void SpeechRejected(object sender, SpeechRecognitionRejectedEventArgs e)
+        {
+            if(recognizeItemList)
+            {
+                KinectActionRecognized?.Invoke(this, new KinectRecognizedActionEventArgs(KinectActionRecognizedSource.Speech, GestureAction.PLAYER_OPEN_ERROR));
             }
         }
 

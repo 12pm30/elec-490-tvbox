@@ -33,36 +33,38 @@
       </item>
 
       <item>
-        <tag>SCREEN_PHOTOS</tag>
+        <tag>PLAY_MOVIE</tag>
         <one-of>
-          <item> photos </item>
-          <item> show photos </item>
-          <item> play photos </item>
-          <item> open photos </item>
+          <item> movie </item>
+          <item> play movie </item>
         </one-of>
       </item>
 
       <item>
         <tag>SCREEN_VIDEOS</tag>
         <one-of>
-          <item> videos </item>
-          <item> show videos </item>
-          <item> play videos </item>
-          <item> open videos </item>
+          <item> show movies </item>
+          <item> open movies </item>
+        </one-of>
+      </item>
+
+      <item>
+        <tag>PLAY_MUSIC</tag>
+        <one-of>
+          <item> music </item>
+          <item> listen to music </item>
+          <item> listen music </item>
+          <item> play music </item>
         </one-of>
       </item>
 
       <item>
         <tag>SCREEN_MUSIC</tag>
         <one-of>
-          <item> music </item>
           <item> show music </item>
-          <item> listen to music </item>
-          <item> listen music </item>
-          <item> play music </item>
           <item> open music </item>
         </one-of>
-      </item>
+      </item>      
 
       <item>
         <tag>INPUT_UP</tag>
