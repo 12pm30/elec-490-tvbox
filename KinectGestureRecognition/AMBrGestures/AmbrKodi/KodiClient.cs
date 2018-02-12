@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Timers;
+using System.Collections;
+using System.Xml;
 
 namespace AMBrGestures
 {
@@ -15,6 +17,7 @@ namespace AMBrGestures
     {
         private Process kodiPython = null;
         private TcpClient kodiTcpClient = null;
+        private StreamReader kodiStreamReader = null;
         private StreamWriter kodiStreamWriter = null;
 
         private Timer scrollTimer = null;
@@ -181,13 +184,68 @@ namespace AMBrGestures
                     speechTimer.Interval = 2500;
                     speechTimer.Start();
 
-                    if(action == GestureAction.VOLUME_UP)
+                    if (action == GestureAction.VOLUME_UP)
                     {
                         kodiStreamWriter.WriteLine("VOLUME_UP 10");
                     }
-                    else if(action == GestureAction.VOLUME_DOWN)
+                    else if (action == GestureAction.VOLUME_DOWN)
                     {
                         kodiStreamWriter.WriteLine("VOLUME_DOWN 10");
+                    }
+                    // Not fully implemented yet, currently just generates the grammar
+                    else if (action == GestureAction.PLAY_MOVIE)
+                    {
+
+                        kodiStreamReader.DiscardBufferedData();
+                        kodiStreamWriter.WriteLine("ls_movies");
+                        List<string> movies = new List<string>();
+                        string currLine = kodiStreamReader.ReadLine();
+                        while (!"DONE".Equals(currLine))
+                        {
+                            movies.Add(currLine);
+                            currLine = kodiStreamReader.ReadLine();
+                        }
+
+                        XmlDocument doc = new XmlDocument();
+                        XmlElement grammar = (XmlElement)doc.AppendChild(doc.CreateElement("grammar"));
+                        grammar.SetAttribute("version", "1.0");
+                        grammar.SetAttribute("xml:lang", "en-US");
+                        grammar.SetAttribute("root", "rootRule");
+                        grammar.SetAttribute("tag-format", "semantics/1.0-literals");
+                        grammar.SetAttribute("xmlns", "http://www.w3.org/2001/06/grammar");
+                        XmlElement rule = (XmlElement)grammar.AppendChild(doc.CreateElement("rule"));
+                        rule.SetAttribute("id", "rootRule");
+                        XmlElement topLevelOneOf = (XmlElement)rule.AppendChild(doc.CreateElement("one-of"));
+                        foreach (string movie in movies)
+                        {
+                            string[] movieParts = movie.Split(':');
+                            string movieId = movieParts[0];
+                            string movieName = string.Join(":", movieParts.Skip(1));
+
+                            // Maybe remove/convert punctuation here?
+
+                            XmlElement outerItem = (XmlElement)topLevelOneOf.AppendChild(doc.CreateElement("item"));
+                            XmlElement tag = (XmlElement)outerItem.AppendChild(doc.CreateElement("tag"));
+                            tag.InnerText = movieId;
+                            XmlElement innerOneOf = (XmlElement)outerItem.AppendChild(doc.CreateElement("one-of"));
+                            XmlElement innerItem = (XmlElement)innerOneOf.AppendChild(doc.CreateElement("item"));
+                            innerItem.InnerText = movieName;
+                        }
+
+                        // This gives a nice human-readable formatted version of the XML
+                        StringWriter temp = new StringWriter();
+                        doc.Save(temp);
+                        Console.WriteLine(temp.ToString());
+
+                        // Do something to get the user's selection...
+                        kodiStreamWriter.WriteLine("GUI_NOTIFICATION 'AMBr' 'Say A Movie Name' 10000");
+                        speechTimer.Stop();
+                        speechTimer.Interval = 10000;
+                        speechTimer.Start();
+
+                        string userSelection = "4";
+                        kodiStreamWriter.WriteLine("PLAYER_OPEN " + userSelection);
+                        
                     }
                     else
                     {
@@ -214,7 +272,7 @@ namespace AMBrGestures
                 }
                 catch { }
             }
-
+            kodiStreamReader = new StreamReader(kodiTcpClient.GetStream());
             kodiStreamWriter = new StreamWriter(kodiTcpClient.GetStream());
             kodiStreamWriter.AutoFlush = true;
         }

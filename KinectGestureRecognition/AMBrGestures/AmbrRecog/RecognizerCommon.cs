@@ -34,6 +34,7 @@ namespace AMBrGestures
         INPUT_HOME,
         INPUT_CONTEXTMENU,
         INPUT_SCROLLDONE,
+        PLAY_MOVIE,
         PLAYER_PLAY,
         PLAYER_STOP,
         PLAYER_PAUSE,
