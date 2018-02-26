@@ -21,7 +21,7 @@ AMBr is a "Voice and Gesture Controlled TV set-top box". In simpler words, it is
 * The Windows software consists of a C# program that interfaces to the Microsoft Gesture and Speech services. This means that the user's voice commands or gestures will be read/interpreted by the Microsoft Gesture and Speech Services. 
 * The C# program then sends recognized actions over a socket interface to a Python script, which communicates with Kodi over a JSON RPC interface. 
 
-## Functionality Description
+## Functional Description
 * The goal of AMBr was to improve the user experience while interacting with a media system. 
 * The system recognizes hand gestures and voice commands in less than 0.75 second. 
 * Gesture recognition continues to function properly in the presence of other moving objects. 
