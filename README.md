@@ -1,5 +1,11 @@
-# Team 32 - ELEC 490/498 Capstone Project - Advance Media Browser or AMBr
+# ELEC 490/498 Capstone Project - Advance Media Browser or AMBr
 AMBr is a "Voice and Gesture Controlled TV set-top box". In simpler words, it is a system that would help the users control their entertainment system with just voice commands and gestures.
+
+## Authors
+* Group: 32
+   * Ryan Baxter
+   * Mitchell Waite
+   * Parv Mital 
 
 ## Motivation / Reason
 * The purpose of AMBr is to make the use entertainment system remote-free, simple and a little modern/futuristic.  
