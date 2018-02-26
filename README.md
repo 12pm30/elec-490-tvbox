@@ -27,8 +27,6 @@ AMBr is a "Voice and Gesture Controlled TV set-top box". In simpler words, it is
 * AMBr also lets you play movies or music without the need of traversing through the list. All you have to do is say the proper command and AMBr will play it for you as long as it exists. For e.g. (Hey AMBr > Play Movie > "Movie Name"
 * To avoid the commands being triggered unintentionally, an activation phrase was implemented for voice commands - Hey AMBr
 
-#
-
 ## How to Install 
 1. Kinect for Windows 2.0
 2. Microsoft Speech Platform SDK v11
