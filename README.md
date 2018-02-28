@@ -3,7 +3,7 @@ AMBr is a Voice and Gesture Controlled TV set-top box, created as part of the EL
 
 In simpler words, it is a system that would help the users control their entertainment system with just voice commands and gestures.
 
-Winners for 2017-18 4th year Computer Engineering Capstone Project.
+Winners for 2017-18 4th year Computer Engineering Capstone Project (https://engineering.queensu.ca/news-events/photos-ece-capstone-design-competiton/)
 
 ### Authors
 * Group: 32
