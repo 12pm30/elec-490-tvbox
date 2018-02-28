@@ -13,7 +13,7 @@ In simpler words, it is a system that would help the users control their enterta
 
 [Demonstration Video](https://www.youtube.com/watch?v=xJPANPWjZ8g)
 
-[Example Gestures & Commands](GESTURES.md)
+[Example Gestures & Commands](gestures.png)
 
 A Kinect v2 sensor must be connected to the system. Only the `Windows` version of the sensor has been tested, it is unknown if the `Xbox One` version of the sensor is compatible.
 
