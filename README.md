@@ -9,6 +9,14 @@ In simpler words, it is a system that would help the users control their enterta
    * Mitchell Waite
    * Parv Mital 
 
+## Usage
+
+[Demonstration Video](https://www.youtube.com/watch?v=xJPANPWjZ8g)
+
+[Example Gestures & Commands](GESTURES.md)
+
+A Kinect v2 sensor must be connected to the system. Only the `Windows` version of the sensor has been tested, it is unknown if the `Xbox One` version of the sensor is compatible.
+
 ## Setup Instructions
 
 These instructions have been tested on Windows 10 with Visual Studio 2017 and Kodi 17. The Microsoft Gesture Service included with Prague isn't compatible with Windows 8.
