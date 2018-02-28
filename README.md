@@ -1,9 +1,7 @@
 # Advanced Media Browser (AMBR) - ELEC 490/498 Capstone Project
-AMBr is a Voice and Gesture Controlled TV set-top box, created as part of the ELEC 490 Capstone Design course at Queen's University. AMBr won first place for the Computer Engineering category at the February 2018 open house. 
+AMBr is a Voice and Gesture Controlled TV set-top box, created as part of the ELEC 490 Capstone Design course at Queen's University. In simpler words, it is a system that would help the users control their entertainment system with just voice commands and gestures.
 
-In simpler words, it is a system that would help the users control their entertainment system with just voice commands and gestures.
-
-Winners for 2017-18 4th year Computer Engineering Capstone Project (https://engineering.queensu.ca/news-events/photos-ece-capstone-design-competiton/)
+AMBr won first place for the Computer Engineering category at the February 2018 open house. (https://engineering.queensu.ca/news-events/photos-ece-capstone-design-competiton/)
 
 ### Authors
 * Group: 32
